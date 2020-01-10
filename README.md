@@ -3,7 +3,7 @@ game
 
 This project implements the game of Breakout.
 
-Name: 
+Name: Thomas Chemmanoor
 
 ### Timeline
 
