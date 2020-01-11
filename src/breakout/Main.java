@@ -125,14 +125,13 @@ public class Main extends Application {
             if(ball.getCenterY()>= myPADDLE.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight()+ PADDLE_CORNER_THRESHOLD)
             {
                 BALL_SPEED_X *= -1;
-                System.out.println("CHANGING X: " + BALL_SPEED_X);
+                //System.out.println("CHANGING X: " + BALL_SPEED_X);
             }
-            if(ball.getCenterX()>= myPADDLE.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD) {
+            if(ball.getCenterX()>= myPADDLE.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
                 BALL_SPEED_Y *= -1;
-                System.out.println("CHANGING Y: " + BALL_SPEED_Y);
+                //System.out.println("CHANGING Y: " + BALL_SPEED_Y);
             }
         }
-
 
 //        // with images can only check bounding box
 //        if (myGrower.getBoundsInParent().intersects(myBouncer.getBoundsInParent())) {
@@ -186,4 +185,3 @@ public class Main extends Application {
         launch(args);
     }
 }
-
