@@ -1,18 +1,17 @@
 package breakout;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -24,7 +23,7 @@ import javafx.util.Duration;
  */
 public class Main extends Application {
     public static final String TITLE = "Thomas's Breakout Game";
-    public static final int SIZE = 400;
+    public static final int SIZE = 600;
     public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
@@ -49,18 +48,21 @@ public class Main extends Application {
     private Rectangle myPADDLE;
     private Rectangle myGrower;
     private Circle ball;
-
+    private Boolean playerLost;
+    private int score;
 
     /**
      * Initialize what will be displayed and how it will be updated.
      */
+
     @Override
-    public void start (Stage stage) {
+    public void start (Stage stage) throws InterruptedException {
         // attach scene to the stage and display it
         myScene = setupGame(SIZE, SIZE, BACKGROUND);
         stage.setScene(myScene);
         stage.setTitle(TITLE);
         stage.show();
+
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY));
         Timeline animation = new Timeline();
@@ -73,6 +75,9 @@ public class Main extends Application {
     private Scene setupGame (int width, int height, Paint background) {
         // create one top level collection to organize the things in the scene
         Group root = new Group();
+        BorderPane rootPane = new BorderPane();
+        rootPane.setPrefSize(SIZE, SIZE*.7);
+        Group rotateGroup = new Group();
         // make some shapes and set their properties
         //Image image = new Image(this.getClass().getClassLoader().getResourceAsStream(BOUNCER_IMAGE));
         //myBouncer = new ImageView(image);
@@ -86,9 +91,46 @@ public class Main extends Application {
 //        myGrower.setFill(GROWER_COLOR);
         // order added to the group is the order in which they are drawn
         //root.getChildren().add(myBouncer);
+
+        // Creating cool rectangle brick that rotates
+        Rectangle rect = new Rectangle (300, 200, 50, 50);
+        rect.setArcHeight(15);
+        rect.setArcWidth(15);
+        rect.setFill(Color.RED);
+
+        Rectangle rect2 = new Rectangle (300, 300, 50, 50);
+        rect2.setArcHeight(15);
+        rect2.setArcWidth(15);
+        rect2.setFill(Color.GREEN);
+
+        rotateGroup.getChildren().addAll(rect, rect2);
+        rootPane.setCenter(rotateGroup);
+
+        RotateTransition rt2 = new RotateTransition(Duration.millis(3000), rect2);
+        rt2.setByAngle(180);
+        rt2.setCycleCount(Animation.INDEFINITE);
+        rt2.setAutoReverse(true);
+
+        RotateTransition rt = new RotateTransition(Duration.millis(3000), rect);
+        rt.setByAngle(180);
+        rt.setCycleCount(Animation.INDEFINITE);
+        rt.setAutoReverse(true);
+
+        RotateTransition grouprt = new RotateTransition(Duration.millis(3000), rotateGroup);
+        grouprt.setByAngle(360);
+        grouprt.setCycleCount(Animation.INDEFINITE);
+        grouprt.setAutoReverse(false);
+
+        rt2.play();
+        rt.play();
+        grouprt.play();
+
+
+
         root.getChildren().add(ball);
         root.getChildren().add(myPADDLE);
-        //root.getChildren().add(myGrower);
+        root.getChildren().add(rootPane);
+        //root.getChildren().add(rect);
         // create a place to see the shapes
         Scene scene = new Scene(root, width, height, background);
         // respond to input
@@ -96,6 +138,27 @@ public class Main extends Application {
         scene.setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
         return scene;
     }
+
+//    private Path createEllipsePath(double centerX, double centerY, double radiusX, double radiusY, double rotate) {
+//        ArcTo arcTo = new ArcTo();
+//        arcTo.setX(centerX - radiusX + 1); // to simulate a full 360 degree celcius circle.
+//        arcTo.setY(centerY - radiusY);
+//        arcTo.setSweepFlag(false);
+//        arcTo.setLargeArcFlag(true);
+//        arcTo.setRadiusX(radiusX);
+//        arcTo.setRadiusY(radiusY);
+//        arcTo.setXAxisRotation(rotate);
+//
+//        Path path = Pathbuilder.create()
+//                .elements(
+//                        new MoveTo(centerX - radiusX, centerY - radiusY),
+//                        arcTo,
+//                        new ClosePath()) // close 1 px gap.
+//                .build();
+//        path.setStroke(Color.DODGERBLUE);
+//        path.getStrokeDashArray().setAll(5d, 5d);
+//        return path;
+//    }
 
     // Change properties of shapes in small ways to animate them over time
     // Note, there are more sophisticated ways to animate shapes, but these simple ways work fine to start
