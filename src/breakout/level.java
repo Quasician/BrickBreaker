@@ -18,6 +18,7 @@ abstract public class level {
     protected Paint background;
     protected int score;
     protected int maxScore;
+    protected brick[] brickArray;
 
 
     public level(int width, int height, Paint background)
