@@ -178,12 +178,13 @@ public class level1 extends level{
     }
 
     public void  updateBrickBallSpeed() {
-
+    for(brick i:brick)
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
             if(ball.getCenterY()>= myPADDLE.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight()+ PADDLE_CORNER_THRESHOLD)
             {
-                BALL_SPEED_X *= -1;
+                BALL_SPEED_X = BALL_SPEED_X;
+
             }
             if(ball.getCenterX()>= myPADDLE.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
                 BALL_SPEED_Y *= -1;

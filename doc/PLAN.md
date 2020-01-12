@@ -39,5 +39,5 @@ Extra: C key will prevent the ball from being able to leave the map from the bot
 
 ### Something Extra
 
-Printing out the player's score when the player either dies or finishes the game!
-This is an important new feature since without it, two players who play the game will not be able to unedrstand how good they are at the game compared to the other person.
+Printing out the highest player's score from a text file when th player finishes the game!
+This is an important new feature since without it no player will know how good they are in relation to the best.
