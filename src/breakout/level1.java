@@ -23,7 +23,7 @@ public class level1 extends level{
 
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final String BALL_IMAGE = "ball.gif";
-    public static int BALL_SPEED_X = 100;
+    public static int BALL_SPEED_X = 50;
     public static int BALL_SPEED_Y = 100;
     public static final int BALL_RADIUS = 6;
     public static final Paint PADDLE_COLOR = Color.PLUM;
@@ -34,7 +34,7 @@ public class level1 extends level{
     public static final Paint GROWER_COLOR = Color.BISQUE;
     public static final double GROWER_RATE = 1.1;
     public static final int GROWER_SIZE = 50;
-    public static final int NUMBER_OF_BRICKS = 7;
+    public static final int NUMBER_OF_BRICKS = 20;
 
     private Rectangle myPADDLE;
     private Circle ball;
@@ -57,7 +57,7 @@ public class level1 extends level{
 
         ball = new Circle(width / 2 - PADDLE_HEIGHT / 2 ,3.5* height / 5 ,BALL_RADIUS);
 
-        myPADDLE = new Rectangle(width / 2 - PADDLE_HEIGHT / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
+        myPADDLE = new Rectangle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
         myPADDLE.setFill(PADDLE_COLOR);
 
         ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 2, Color.GREEN);
@@ -69,6 +69,8 @@ public class level1 extends level{
         rotateGroup2.getChildren().addAll(outerCircle);
         rotatePane2.setCenter(rotateGroup2);
 
+        innerCircle.addAll(outerCircle);
+        brickArray = innerCircle.toArray(new brick[0]);
 //        RotateTransition rt2 = new RotateTransition(Duration.millis(3000), rect2);
 //        rt2.setByAngle(180);
 //        rt2.setCycleCount(Animation.INDEFINITE);
@@ -120,8 +122,8 @@ public class level1 extends level{
         {
             double x = x_center + radiusPath * Math.cos(2 * Math.PI * i / number);
             double y = x_center + radiusPath * Math.sin(2 * Math.PI * i / number);
-            System.out.println(x + " " + y + " " + radiusBall);
-            Circle c = new Circle (x, y, radiusBall, Color.RED);
+            //System.out.println(x + " " + y + " " + radiusBall);
+            //Circle c = new Circle (x, y, radiusBall, Color.RED);
             list.add(new brick(x,y,radiusBall, hp, color));
         }
         return list;
@@ -190,27 +192,31 @@ public class level1 extends level{
     }
 
     public void handleKeyInput (KeyCode code) {
-        Shape intersection = Shape.intersect(myPADDLE, ball);
-        if (intersection.getBoundsInLocal().getWidth() == -1)
-        {
-            if (code == KeyCode.RIGHT && myPADDLE.getX() < width - myPADDLE.getBoundsInLocal().getWidth())
-            {
-                myPADDLE.setX(myPADDLE.getX() + PADDLE_SPEED);
-            } else if (code == KeyCode.LEFT && myPADDLE.getX() > 0)
-            {
-                myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
-            }
-        }else
-        {
-            if((myPADDLE.getX()+PADDLE_WIDTH/2)>ball.getCenterX())
-            {
-                myPADDLE.setX(myPADDLE.getX() + 2 * PADDLE_SPEED);
-            }else if ((myPADDLE.getX()+PADDLE_WIDTH/2)<ball.getCenterX())
-            {
-                myPADDLE.setX(myPADDLE.getX() - 2 * PADDLE_SPEED);
+        if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
+            Shape intersection = Shape.intersect(myPADDLE, ball);
+            if (intersection.getBoundsInLocal().getWidth() == -1) {
+                if (code == KeyCode.RIGHT && myPADDLE.getX() < width - myPADDLE.getBoundsInLocal().getWidth()) {
+                    myPADDLE.setX(myPADDLE.getX() + PADDLE_SPEED);
+                } else if (code == KeyCode.LEFT && myPADDLE.getX() > 0) {
+                    myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
+                }
+            } else {
+                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getCenterX()) {
+                    myPADDLE.setX(myPADDLE.getX() + 3 * PADDLE_SPEED);
+                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getCenterX()) {
+                    myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
+                }
             }
         }
 
+        if (code == KeyCode.R) {
+            ball.setCenterX(width / 2 - PADDLE_HEIGHT / 2);
+            ball.setCenterY(3.5* height / 5);
+            myPADDLE.setX(width / 2 - PADDLE_WIDTH / 2);
+            myPADDLE.setY(4* height / 5);
+            BALL_SPEED_X = 100;
+            BALL_SPEED_Y = 100;
+        }
 //        else if (code == KeyCode.UP) {
 //            myPADDLE.setY(myPADDLE.getY() - PADDLE_SPEED);
 //        }
