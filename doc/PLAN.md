@@ -6,16 +6,18 @@
 Jet ball was the most interesting variant to me since I always thought of breakout as having stationary bricks. The concentric circle level seemed very interesting. I will try to include one of those levels in my game or make all levels like this. 
 
 ### General Level Descriptions
-1st Level - Big Concentric circle of circular bricks that are all moving in the same direction. Outer bricks should need multiple hits to break.
+1st Level - Big Concentric circle of circular bricks with 1hp that are all moving in the same direction.
 
-2nd Level - Two Concentric circles of circular bricks that are moving in different directions.
+2nd Level - Two Concentric circles of circular bricks that are moving in different directions. Outer bricks should need multiple hits to break.
 
+3rd Level - Three Concentric circles of circular bricks that are moving in different directions. Outer bricks should need multiple hits to break. Innermost ring should require multiple hits and drop powerups.
 
 ### Bricks Ideas
 Normal bricks- require one hit with ball to break - 100 points
 
 Metal bricks - require 2 hits with ball to break - 300 points
 
+Obsidian bricks - require 3 hits with ball to break - 500 points
 
 ### Power Up Ideas
 
@@ -23,11 +25,17 @@ Speed up Paddle - Increases paddle speed by 2
 
 Slow Down Balls - Slows down ball/balls by a certain amount
 
+Increased Paddle Length - Increases the size of the paddle
+
 ### Cheat Key Ideas
+L adds additional lives to the player
 
-C key will prevent the ball from being able to leave the map from the bottom. Essentially Immortality.
+R resets the ball and paddle to starting positions
 
-M key will make ball metal and allow the player to be able to break all bricks with one hit
+1-9 takes player to that corresponding level
+
+Extra: C key will prevent the ball from being able to leave the map from the bottom. Essentially Immortality.
+
 
 ### Something Extra
 
