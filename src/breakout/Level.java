@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 abstract public class Level {
@@ -29,16 +30,15 @@ abstract public class Level {
     }
 
     public abstract Scene setUpLevel();
-    public abstract boolean step (double elapsedTime);
-    public abstract void handleKeyInput (KeyCode code);
-    public abstract void updateScore (int value);
+    public abstract boolean step (double elapsedTime, Text text);
+
 
     // What to do each time a key is pressed
-    private void handleMouseInput (double x, double y) {
+//    private void handleMouseInput (double x, double y) {
 //        if (myGrower.contains(x, y)) {
 //            myGrower.setScaleX(myGrower.getScaleX() * GROWER_RATE);
 //            myGrower.setScaleY(myGrower.getScaleY() * GROWER_RATE);
 //        }
-    }
+//    }
 
 }

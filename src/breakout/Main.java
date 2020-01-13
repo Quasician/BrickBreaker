@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.*;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -28,6 +29,7 @@ public class Main extends Application {
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     public static final Paint BACKGROUND = Color.AZURE;
+    public static Text scoreHUD;
 
 
     // some things needed to remember during game
@@ -46,14 +48,14 @@ public class Main extends Application {
     @Override
     public void start (Stage stage) throws InterruptedException {
         // attach scene to the stage and display it
-        level1 l1 = new level1(SIZE, SIZE, BACKGROUND);
+        Level1 l1 = new Level1(SIZE, SIZE, BACKGROUND);
         myScene = l1.setUpLevel();
         stage.setScene(myScene);
         stage.setTitle(TITLE);
         stage.show();
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> l1.step(SECOND_DELAY));
+        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> l1.step(SECOND_DELAY,scoreHUD));
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
