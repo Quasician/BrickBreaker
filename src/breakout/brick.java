@@ -10,17 +10,11 @@ import javafx.scene.shape.Shape;
 
 import java.awt.*;
 
-public class brick extends Rectangle {
-    private int hp;
-    private int x_init;
-    private int y_init;
-    private int width;
-    private int height;
-    private Paint color;
+public class brick extends gameObject {
 
 
     public brick (int x, int y, int width, int height, int hp){
-        super(x, y, width, height);
+        super(x, y, width, height, hp);
         x_init = x;
         y_init = y;
         this.width = width;

@@ -136,7 +136,8 @@ public class level1 extends level{
     public boolean step (double elapsedTime) {
         // update "actors" attributes
 
-        updateBallSpeed();
+        updateBallWallSpeed();
+        updateBallPaddleSpeed();
         updateBrickBallSpeed(elapsedTime);
 
         // NEW Java 10 syntax that simplifies things (but watch out it can make code harder to understand)
@@ -156,7 +157,7 @@ public class level1 extends level{
         return score >= maxScore;
     }
 
-    public void  updateBallSpeed() {
+    public void  updateBallWallSpeed() {
         if(ball.getCenterX()-ball.getRadius()<=0  || ball.getCenterX() + ball.getRadius()>= width)
         {
             BALL_SPEED_X *= -1;
@@ -165,6 +166,9 @@ public class level1 extends level{
         {
             BALL_SPEED_Y *= -1;
         }
+    }
+
+    public void  updateBallPaddleSpeed() {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
             if(ball.getCenterY()>= myPADDLE.getY() && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight())
