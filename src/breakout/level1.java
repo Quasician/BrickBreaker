@@ -56,7 +56,7 @@ public class level1 extends level{
         Group rotateGroup1 = new Group();
         Group rotateGroup2 = new Group();
 
-        ball = new Rectangle(width / 2 - PADDLE_HEIGHT / 2 ,3.5* height / 5 ,BALL_DIAMETER, BALL_DIAMETER);
+        ball = new ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
 
