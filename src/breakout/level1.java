@@ -23,8 +23,9 @@ public class level1 extends level{
 
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final String BALL_IMAGE = "ball.gif";
-    public static int BALL_SPEED_X = 50;
-    public static int BALL_SPEED_Y = 100;
+    public static int BALL_SPEED_X = 120;
+    public static int BALL_SPEED_Y = 160;
+    public static int BALL_SPEED_TOTAL = 200;
     public static final int BALL_RADIUS = 6;
     public static final Paint PADDLE_COLOR = Color.PLUM;
     public static final int PADDLE_WIDTH = 75;
@@ -60,12 +61,12 @@ public class level1 extends level{
         myPADDLE = new Rectangle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
         myPADDLE.setFill(PADDLE_COLOR);
 
-        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 2, Color.GREEN);
+        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2,Color.GREEN);
         rotateGroup1.getChildren().addAll(innerCircle);
         rotatePane1.setCenter(rotateGroup1);
 
 
-        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 2, Color.RED);
+        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 2, Color.RED);
         rotateGroup2.getChildren().addAll(outerCircle);
         rotatePane2.setCenter(rotateGroup2);
 
@@ -115,16 +116,16 @@ public class level1 extends level{
     }
 
 
-    public ArrayList createBricksInCircles (int x_center, int y_center,int number, int radiusPath, int radiusBall, int hp, Paint color)
+    public ArrayList createBricksInCircles (int x_center, int y_center,int number, int radiusPath, int brickWidth, int brickHeight, int hp, Paint color)
     {
         ArrayList<brick> list = new ArrayList<brick>();
         for( int i = 0; i<number; i++)
         {
-            double x = x_center + radiusPath * Math.cos(2 * Math.PI * i / number);
-            double y = x_center + radiusPath * Math.sin(2 * Math.PI * i / number);
+            int x = (int)(x_center + radiusPath * Math.cos(2 * Math.PI * i / number));
+            int y = (int)(y_center + radiusPath * Math.sin(2 * Math.PI * i / number));
             //System.out.println(x + " " + y + " " + radiusBall);
             //Circle c = new Circle (x, y, radiusBall, Color.RED);
-            list.add(new brick(x,y,radiusBall, hp, color));
+            list.add(new brick(x-brickWidth/2,y-brickWidth/2, brickWidth, brickHeight, hp, color));
         }
         return list;
     }
@@ -136,7 +137,7 @@ public class level1 extends level{
         // update "actors" attributes
 
         updateBallSpeed();
-
+        updateBrickBallSpeed(elapsedTime);
 
         // NEW Java 10 syntax that simplifies things (but watch out it can make code harder to understand)
         // \var intersection = Shape.intersect(myPADDLE, myGrower);
@@ -177,22 +178,22 @@ public class level1 extends level{
         }
     }
 
-    public void  updateBrickBallSpeed() {
-    for(brick i:brick)
-        Shape intersection = Shape.intersect(myPADDLE, ball);
-        if (intersection.getBoundsInLocal().getWidth() != -1) {
-            if(ball.getCenterY()>= myPADDLE.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight()+ PADDLE_CORNER_THRESHOLD)
-            {
-                BALL_SPEED_X = BALL_SPEED_X;
-
-            }
-            if(ball.getCenterX()>= myPADDLE.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
-                BALL_SPEED_Y *= -1;
+    public void  updateBrickBallSpeed(double elapsedTime) {
+        for (brick i : brickArray) {
+            Shape intersection = Shape.intersect(i, ball);
+            if (intersection.getBoundsInLocal().getWidth() != -1) {
+                if(ball.getCenterY()>= i.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= i.getY()+i.getHeight()+ PADDLE_CORNER_THRESHOLD)
+                {
+                    BALL_SPEED_X *= -1;
+                }
+                if(ball.getCenterX()>= i.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
+                    BALL_SPEED_Y *= -1;
+                }
             }
         }
     }
 
-    public void handleKeyInput (KeyCode code) {
+    public void handleKeyInput(KeyCode code) {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
             if (intersection.getBoundsInLocal().getWidth() == -1) {

@@ -4,23 +4,27 @@ import javafx.scene.Node;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 import java.awt.*;
 
-public class brick extends Circle{
+public class brick extends Rectangle {
     private int hp;
-    private double x_init;
-    private double y_init;
-    private double radius;
+    private int x_init;
+    private int y_init;
+    private int width;
+    private int height;
     private Paint color;
 
 
-    public brick (double x, double y, double rad, int hp, Paint color){
-        super(x, y, rad, color);
+    public brick (int x, int y, int width, int height, int hp, Paint color){
+        super(x, y, width, height);
+        super.setFill(color);
         x_init = x;
         y_init = y;
-        radius = rad;
+        this.width = width;
+        this.height = height;
         this.hp = hp;
         this.color = color;
     }
