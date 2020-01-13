@@ -61,12 +61,12 @@ public class level1 extends level{
         myPADDLE = new Rectangle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
         myPADDLE.setFill(PADDLE_COLOR);
 
-        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2,Color.GREEN);
+        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 1,Color.GREEN);
         rotateGroup1.getChildren().addAll(innerCircle);
         rotatePane1.setCenter(rotateGroup1);
 
 
-        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 2, Color.RED);
+        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 1, Color.RED);
         rotateGroup2.getChildren().addAll(outerCircle);
         rotatePane2.setCenter(rotateGroup2);
 
@@ -181,13 +181,18 @@ public class level1 extends level{
     public void  updateBrickBallSpeed(double elapsedTime) {
         for (brick i : brickArray) {
             Shape intersection = Shape.intersect(i, ball);
-            if (intersection.getBoundsInLocal().getWidth() != -1) {
-                if(ball.getCenterY()>= i.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= i.getY()+i.getHeight()+ PADDLE_CORNER_THRESHOLD)
+            if (intersection.getBoundsInLocal().getWidth() != -1 && i.getHP() > 0) {
+                if(ball.getCenterY()>= i.getY()+i.getHeight() || ball.getCenterY()<= i.getY())
                 {
+                    BALL_SPEED_Y *= -1;
+                }
+                if(ball.getCenterX()>= i.getX()+i.getWidth() || ball.getCenterX()<= i.getX()){
                     BALL_SPEED_X *= -1;
                 }
-                if(ball.getCenterX()>= i.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
-                    BALL_SPEED_Y *= -1;
+                i.decreaseHP();
+                if(i.getHP()==0)
+                {
+                    i.setColor(Color.TRANSPARENT);
                 }
             }
         }

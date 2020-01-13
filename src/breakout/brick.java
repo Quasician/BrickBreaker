@@ -38,4 +38,10 @@ public class brick extends Rectangle {
     {
         return hp;
     }
+
+    public void setColor(Paint color)
+    {
+        this.color = color;
+        super.setFill(color);
+    }
 }
