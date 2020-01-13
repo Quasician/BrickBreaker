@@ -26,19 +26,19 @@ public class level1 extends level{
     public static int BALL_SPEED_X = 120;
     public static int BALL_SPEED_Y = 160;
     public static int BALL_SPEED_TOTAL = 200;
-    public static final int BALL_RADIUS = 6;
+    public static final int BALL_DIAMETER = 12;
     public static final Paint PADDLE_COLOR = Color.PLUM;
     public static final int PADDLE_WIDTH = 75;
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED = 5;
-    public static final double PADDLE_CORNER_THRESHOLD = BALL_RADIUS/1.5;
+    public static final double PADDLE_CORNER_THRESHOLD = BALL_DIAMETER/1.5;
     public static final Paint GROWER_COLOR = Color.BISQUE;
     public static final double GROWER_RATE = 1.1;
     public static final int GROWER_SIZE = 50;
     public static final int NUMBER_OF_BRICKS = 20;
 
     private paddle myPADDLE;
-    private Circle ball;
+    private Rectangle ball;
 
     public level1(int width, int height, Paint background) {
         super(width, height, background);
@@ -56,7 +56,9 @@ public class level1 extends level{
         Group rotateGroup1 = new Group();
         Group rotateGroup2 = new Group();
 
-        ball = new Circle(width / 2 - PADDLE_HEIGHT / 2 ,3.5* height / 5 ,BALL_RADIUS);
+        ball = new Rectangle(width / 2 - PADDLE_HEIGHT / 2 ,3.5* height / 5 ,BALL_DIAMETER, BALL_DIAMETER);
+        ball.setArcHeight(BALL_DIAMETER);
+        ball.setArcWidth(BALL_DIAMETER);
 
         myPADDLE = new paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
 
@@ -150,18 +152,18 @@ public class level1 extends level{
 //        else {
 //            myGrower.setFill(GROWER_COLOR);
 //        }
-        ball.setCenterX(ball.getCenterX() + BALL_SPEED_X * elapsedTime);
-        ball.setCenterY(ball.getCenterY() + BALL_SPEED_Y * elapsedTime);
+        ball.setX(ball.getX()+ BALL_SPEED_X * elapsedTime);
+        ball.setY(ball.getY()+ BALL_SPEED_Y * elapsedTime);
 
         return score >= maxScore;
     }
 
     public void  updateBallWallSpeed() {
-        if(ball.getCenterX()-ball.getRadius()<=0  || ball.getCenterX() + ball.getRadius()>= width)
+        if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
             BALL_SPEED_X *= -1;
         }
-        if(ball.getCenterY() - ball.getRadius()<=0)
+        if(ball.getY()<=0)
         {
             BALL_SPEED_Y *= -1;
         }
@@ -170,11 +172,11 @@ public class level1 extends level{
     public void  updateBallPaddleSpeed() {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
-            if(ball.getCenterY()>= myPADDLE.getY() && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight())
+            if(ball.getY() + ball.getHeight()/2>= myPADDLE.getY() && ball.getY() + ball.getHeight()/2<= myPADDLE.getY()+myPADDLE.getHeight())
             {
                 BALL_SPEED_X *= -1;
             }
-            if(ball.getCenterX()>= myPADDLE.getX()  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()){
+            if(ball.getX() + ball.getWidth()/2 >= myPADDLE.getX()  && ball.getX() + ball.getWidth()/2<= myPADDLE.getX()+myPADDLE.getWidth()){
 //                double temp =  myPADDLE.getX()+myPADDLE.getWidth();
 //                System.out.println(ball.getCenterX() + " " + myPADDLE.getX() + " " +  temp);
                 BALL_SPEED_Y *= -1;
@@ -187,15 +189,15 @@ public class level1 extends level{
         for (brick i : brickArray) {
             Shape intersection = Shape.intersect(i, ball);
             if (intersection.getBoundsInLocal().getWidth() != -1 && i.getHP() > 0) {
-                if(ball.getCenterY()>= i.getY()+i.getHeight() || ball.getCenterY()<= i.getY())
+                if(ball.getY() + ball.getHeight()/2>= i.getY()+i.getHeight() || ball.getY() + ball.getHeight()/2<= i.getY())
                 {
                     BALL_SPEED_Y *= -1;
                 }
-                if(ball.getCenterX()>= i.getX()+i.getWidth() || ball.getCenterX()<= i.getX()){
+                if(ball.getX() + ball.getWidth()/2>= i.getX()+i.getWidth() || ball.getX() + ball.getWidth()/2<= i.getX()){
                     BALL_SPEED_X *= -1;
                 }
-                ball.setCenterX(ball.getCenterX() + 4*BALL_SPEED_X * elapsedTime);
-                ball.setCenterY(ball.getCenterY() + 4*BALL_SPEED_Y * elapsedTime);
+                ball.setX(ball.getX() + 4*BALL_SPEED_X * elapsedTime);
+                ball.setY(ball.getY() + 4*BALL_SPEED_Y * elapsedTime);
                 i.decreaseHP();
             }
         }
@@ -211,17 +213,17 @@ public class level1 extends level{
                     myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
                 }
             } else {
-                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getCenterX()) {
+                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getX() + ball.getWidth()/2) {
                     myPADDLE.setX(myPADDLE.getX() + 3 * PADDLE_SPEED);
-                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getCenterX()) {
+                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getX() + ball.getWidth()/2) {
                     myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
                 }
             }
         }
 
         if (code == KeyCode.R) {
-            ball.setCenterX(width / 2 - PADDLE_HEIGHT / 2);
-            ball.setCenterY(3.5* height / 5);
+            ball.setX(width / 2 - PADDLE_HEIGHT / 2);
+            ball.setY(3.5* height / 5);
             myPADDLE.setX(width / 2 - PADDLE_WIDTH / 2);
             myPADDLE.setY(4* height / 5);
             BALL_SPEED_X = 100;
