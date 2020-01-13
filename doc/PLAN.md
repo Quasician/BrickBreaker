@@ -15,9 +15,9 @@ Jet ball was the most interesting variant to me since I always thought of breako
 ### Bricks Ideas
 Normal bricks- require one hit with ball to break - 100 points
 
-Metal bricks - require 2 hits with ball to break - 300 points
+Metal bricks - require 2 hits with ball to break - 200 points
 
-Obsidian bricks - require 3 hits with ball to break - 500 points
+Obsidian bricks - require 3 hits with ball to break - 300 points
 
 ### Power Up Ideas
 

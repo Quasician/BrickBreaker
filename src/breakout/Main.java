@@ -54,6 +54,7 @@ public class Main extends Application {
         stage.setTitle(TITLE);
         stage.show();
 
+
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> l1.step(SECOND_DELAY,scoreHUD));
         Timeline animation = new Timeline();
