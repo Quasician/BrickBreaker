@@ -31,7 +31,7 @@ public class level1 extends level{
     public static final int PADDLE_WIDTH = 75;
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED = 5;
-    public static final double PADDLE_CORNER_THRESHOLD = BALL_RADIUS/1.3;
+    public static final double PADDLE_CORNER_THRESHOLD = BALL_RADIUS/1.5;
     public static final Paint GROWER_COLOR = Color.BISQUE;
     public static final double GROWER_RATE = 1.1;
     public static final int GROWER_SIZE = 50;
@@ -61,12 +61,12 @@ public class level1 extends level{
         myPADDLE = new Rectangle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
         myPADDLE.setFill(PADDLE_COLOR);
 
-        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 1,Color.GREEN);
+        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2);
         rotateGroup1.getChildren().addAll(innerCircle);
         rotatePane1.setCenter(rotateGroup1);
 
 
-        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 1, Color.RED);
+        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 3);
         rotateGroup2.getChildren().addAll(outerCircle);
         rotatePane2.setCenter(rotateGroup2);
 
@@ -116,7 +116,7 @@ public class level1 extends level{
     }
 
 
-    public ArrayList createBricksInCircles (int x_center, int y_center,int number, int radiusPath, int brickWidth, int brickHeight, int hp, Paint color)
+    public ArrayList createBricksInCircles (int x_center, int y_center,int number, int radiusPath, int brickWidth, int brickHeight, int hp)
     {
         ArrayList<brick> list = new ArrayList<brick>();
         for( int i = 0; i<number; i++)
@@ -125,7 +125,7 @@ public class level1 extends level{
             int y = (int)(y_center + radiusPath * Math.sin(2 * Math.PI * i / number));
             //System.out.println(x + " " + y + " " + radiusBall);
             //Circle c = new Circle (x, y, radiusBall, Color.RED);
-            list.add(new brick(x-brickWidth/2,y-brickWidth/2, brickWidth, brickHeight, hp, color));
+            list.add(new brick(x-brickWidth/2,y-brickWidth/2, brickWidth, brickHeight, hp));
         }
         return list;
     }
@@ -167,11 +167,13 @@ public class level1 extends level{
         }
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
-            if(ball.getCenterY()>= myPADDLE.getY()-PADDLE_CORNER_THRESHOLD && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight()+ PADDLE_CORNER_THRESHOLD)
+            if(ball.getCenterY()>= myPADDLE.getY() && ball.getCenterY()<= myPADDLE.getY()+myPADDLE.getHeight())
             {
                 BALL_SPEED_X *= -1;
             }
-            if(ball.getCenterX()>= myPADDLE.getX()-PADDLE_CORNER_THRESHOLD  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()+ PADDLE_CORNER_THRESHOLD){
+            if(ball.getCenterX()>= myPADDLE.getX()  && ball.getCenterX()<= myPADDLE.getX()+myPADDLE.getWidth()){
+//                double temp =  myPADDLE.getX()+myPADDLE.getWidth();
+//                System.out.println(ball.getCenterX() + " " + myPADDLE.getX() + " " +  temp);
                 BALL_SPEED_Y *= -1;
             }
 
@@ -189,11 +191,9 @@ public class level1 extends level{
                 if(ball.getCenterX()>= i.getX()+i.getWidth() || ball.getCenterX()<= i.getX()){
                     BALL_SPEED_X *= -1;
                 }
+                ball.setCenterX(ball.getCenterX() + 4*BALL_SPEED_X * elapsedTime);
+                ball.setCenterY(ball.getCenterY() + 4*BALL_SPEED_Y * elapsedTime);
                 i.decreaseHP();
-                if(i.getHP()==0)
-                {
-                    i.setColor(Color.TRANSPARENT);
-                }
             }
         }
     }

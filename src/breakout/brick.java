@@ -1,6 +1,7 @@
 package breakout;
 
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
@@ -18,25 +19,45 @@ public class brick extends Rectangle {
     private Paint color;
 
 
-    public brick (int x, int y, int width, int height, int hp, Paint color){
+    public brick (int x, int y, int width, int height, int hp){
         super(x, y, width, height);
-        super.setFill(color);
         x_init = x;
         y_init = y;
         this.width = width;
         this.height = height;
         this.hp = hp;
-        this.color = color;
+        updateColor();
     }
 
     public void decreaseHP()
     {
         hp--;
+        updateColor();
     }
 
     public int getHP()
     {
         return hp;
+    }
+
+    public void updateColor()
+    {
+        if(hp == 3)
+        {
+            setColor(Color.BLACK);
+        }
+        else if(hp == 2)
+        {
+            setColor(Color.SILVER);
+        }
+        else if(hp == 1)
+        {
+            setColor(Color.GREEN);
+        }
+        else if(hp == 0)
+        {
+            setColor(Color.TRANSPARENT);
+        }
     }
 
     public void setColor(Paint color)
