@@ -10,10 +10,10 @@ import javafx.scene.shape.Shape;
 
 import java.awt.*;
 
-public class brick extends gameObject {
+public class Brick extends GameObject {
 
 
-    public brick (int x, int y, int width, int height, int hp){
+    public Brick (int x, int y, int width, int height, int hp){
         super(x, y, width, height);
         x_init = x;
         y_init = y;

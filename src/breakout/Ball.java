@@ -2,8 +2,8 @@ package breakout;
 
 import javafx.scene.paint.Paint;
 
-public class paddle extends gameObject{
-    public paddle(int x, int y, int width, int height, int hp, Paint color) {
+public class Ball extends GameObject{
+    public Ball(int x, int y, int width, int height, Paint color) {
         super(x, y, width, height);
         super.setFill(color);
     }

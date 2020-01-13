@@ -19,7 +19,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class level1 extends level{
+public class Level1 extends Level{
 
     public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
     public static final String BALL_IMAGE = "ball.gif";
@@ -37,12 +37,12 @@ public class level1 extends level{
     public static final int GROWER_SIZE = 50;
     public static final int NUMBER_OF_BRICKS = 20;
 
-    private paddle myPADDLE;
-    private Rectangle ball;
+    private Paddle myPADDLE;
+    private Ball ball;
 
-    public level1(int width, int height, Paint background) {
+    public Level1(int width, int height, Paint background) {
         super(width, height, background);
-        super.brickArray = new brick[NUMBER_OF_BRICKS];
+        super.brickArray = new Brick[NUMBER_OF_BRICKS];
     }
 
     @Override
@@ -56,23 +56,23 @@ public class level1 extends level{
         Group rotateGroup1 = new Group();
         Group rotateGroup2 = new Group();
 
-        ball = new ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
+        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
 
-        myPADDLE = new paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
 
-        ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2);
+        ArrayList<Brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2);
         rotateGroup1.getChildren().addAll(innerCircle);
         rotatePane1.setCenter(rotateGroup1);
 
 
-        ArrayList<brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 3);
+        ArrayList<Brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 3);
         rotateGroup2.getChildren().addAll(outerCircle);
         rotatePane2.setCenter(rotateGroup2);
 
         innerCircle.addAll(outerCircle);
-        brickArray = innerCircle.toArray(new brick[0]);
+        brickArray = innerCircle.toArray(new Brick[0]);
 //        RotateTransition rt2 = new RotateTransition(Duration.millis(3000), rect2);
 //        rt2.setByAngle(180);
 //        rt2.setCycleCount(Animation.INDEFINITE);
@@ -119,14 +119,14 @@ public class level1 extends level{
 
     public ArrayList createBricksInCircles (int x_center, int y_center,int number, int radiusPath, int brickWidth, int brickHeight, int hp)
     {
-        ArrayList<brick> list = new ArrayList<brick>();
+        ArrayList<Brick> list = new ArrayList<Brick>();
         for( int i = 0; i<number; i++)
         {
             int x = (int)(x_center + radiusPath * Math.cos(2 * Math.PI * i / number));
             int y = (int)(y_center + radiusPath * Math.sin(2 * Math.PI * i / number));
             //System.out.println(x + " " + y + " " + radiusBall);
             //Circle c = new Circle (x, y, radiusBall, Color.RED);
-            list.add(new brick(x-brickWidth/2,y-brickWidth/2, brickWidth, brickHeight, hp));
+            list.add(new Brick(x-brickWidth/2,y-brickWidth/2, brickWidth, brickHeight, hp));
         }
         return list;
     }
@@ -186,7 +186,7 @@ public class level1 extends level{
     }
 
     public void  updateBrickBallSpeed(double elapsedTime) {
-        for (brick i : brickArray) {
+        for (Brick i : brickArray) {
             Shape intersection = Shape.intersect(i, ball);
             if (intersection.getBoundsInLocal().getWidth() != -1 && i.getHP() > 0) {
                 if(ball.getY() + ball.getHeight()/2>= i.getY()+i.getHeight() || ball.getY() + ball.getHeight()/2<= i.getY())

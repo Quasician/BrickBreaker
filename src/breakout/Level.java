@@ -12,16 +12,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-abstract public class level {
+abstract public class Level {
     protected int width;
     protected int height;
     protected Paint background;
     protected int score;
     protected int maxScore;
-    protected brick[] brickArray;
+    protected Brick[] brickArray;
 
 
-    public level(int width, int height, Paint background)
+    public Level(int width, int height, Paint background)
     {
         this.width = width;
         this.height = height;
