@@ -14,7 +14,7 @@ public class brick extends gameObject {
 
 
     public brick (int x, int y, int width, int height, int hp){
-        super(x, y, width, height, hp);
+        super(x, y, width, height);
         x_init = x;
         y_init = y;
         this.width = width;

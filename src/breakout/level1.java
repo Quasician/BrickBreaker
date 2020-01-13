@@ -37,7 +37,7 @@ public class level1 extends level{
     public static final int GROWER_SIZE = 50;
     public static final int NUMBER_OF_BRICKS = 20;
 
-    private Rectangle myPADDLE;
+    private paddle myPADDLE;
     private Circle ball;
 
     public level1(int width, int height, Paint background) {
@@ -58,8 +58,7 @@ public class level1 extends level{
 
         ball = new Circle(width / 2 - PADDLE_HEIGHT / 2 ,3.5* height / 5 ,BALL_RADIUS);
 
-        myPADDLE = new Rectangle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT);
-        myPADDLE.setFill(PADDLE_COLOR);
+        myPADDLE = new paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
 
         ArrayList<brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2);
         rotateGroup1.getChildren().addAll(innerCircle);
