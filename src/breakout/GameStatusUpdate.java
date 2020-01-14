@@ -17,6 +17,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+
 
 /**
  * A basic example JavaFX program for the first lab.
@@ -24,8 +26,8 @@ import javafx.util.Duration;
  * @author Robert C. Duvall
  */
 public class GameStatusUpdate extends Application {
-    public int BALL_SPEED_X = 120;
-    public int BALL_SPEED_Y = 160;
+    public int BALL_SPEED_X = 120; //120
+    public int BALL_SPEED_Y = 160;  //160
     public static int BALL_SPEED_TOTAL = 200;
     public static final int PADDLE_WIDTH = 75;
     public static final int PADDLE_HEIGHT = 50/3;
@@ -42,18 +44,18 @@ public class GameStatusUpdate extends Application {
     private boolean playerWon;
     private int levelNumber;
     private int score;
-    private int width;
-    private int height;
+    private static int width = 600;
+    private static int height = 600;
     private Ball ball;
     private Paddle myPADDLE;
-    private Brick[] brickArray;
     private Text scoreHUD;
 
+    private Group root;
 
-    // some things needed to remember during game
-    private Scene myScene;
+    public static final int BALL_DIAMETER = 12;
 
-
+    public static final Paint PADDLE_COLOR = Color.PLUM;
+    private ArrayList<Brick> brickList;
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -61,15 +63,25 @@ public class GameStatusUpdate extends Application {
 
     @Override
     public void start (Stage stage) throws InterruptedException {
-        Level1 l1 = new Level1(SIZE, SIZE, BACKGROUND);
-        myScene = l1.setUpLevel();
-        stage.setScene(myScene);
+        brickList = new ArrayList <Brick>();
+        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
+        ball.setArcHeight(BALL_DIAMETER);
+        ball.setArcWidth(BALL_DIAMETER);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
+        scoreHUD = new Text();
+        root = new Group();
+
+        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, brickList);
+        Scene scene = new Scene(root, width, height, BACKGROUND);
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+
+        stage.setScene(scene);
         stage.setTitle(TITLE);
         stage.show();
 
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> l1.step(SECOND_DELAY,scoreHUD));
+        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY,scoreHUD));
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
@@ -101,7 +113,7 @@ public class GameStatusUpdate extends Application {
     public void  updateBallWallSpeed() {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
-            System.out.println("HELLO");
+            System.out.println(ball.getX());
             BALL_SPEED_X *= -1;
         }
         if(ball.getY()<=0)
@@ -127,7 +139,7 @@ public class GameStatusUpdate extends Application {
     }
 
     public void  updateBrickBallSpeed(double elapsedTime) {
-        for (Brick i : brickArray) {
+        for (Brick i : brickList) {
             Shape intersection = Shape.intersect(i, ball);
             if (intersection.getBoundsInLocal().getWidth() != -1 && i.getHP() > 0) {
                 if(ball.getY() + ball.getHeight()/2>= i.getY()+i.getHeight() || ball.getY() + ball.getHeight()/2<= i.getY())
