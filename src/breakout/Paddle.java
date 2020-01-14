@@ -13,6 +13,10 @@ public class Paddle extends GameObject{
     {
         hp--;
     }
+    public void increaseHP()
+    {
+        hp++;
+    }
 
     public int getHP()
     {

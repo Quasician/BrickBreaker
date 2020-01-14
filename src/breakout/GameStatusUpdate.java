@@ -196,7 +196,10 @@ public class GameStatusUpdate extends Application {
             BALL_SPEED_X = 100;
             BALL_SPEED_Y = 100;
         }
-
+        if (code == KeyCode.L) {
+            myPADDLE.increaseHP();
+            updateLivesText();
+        }
     }
 
     public void writeHUD(Text text, String s, int font, int x, int y)
