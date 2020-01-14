@@ -57,6 +57,7 @@ public class GameStatusUpdate extends Application {
 
     public static final Paint PADDLE_COLOR = Color.PLUM;
     private ArrayList<Brick> brickList;
+    private Scene startScene;
     private Scene endScene;
     private Stage stage;
 
@@ -85,6 +86,7 @@ public class GameStatusUpdate extends Application {
         stage.show();
         updateScore(0);
         updateLivesText();
+        showStartScreen();
 
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
@@ -101,6 +103,16 @@ public class GameStatusUpdate extends Application {
      */
     public static void main (String[] args) {
         launch(args);
+    }
+
+    public void showStartScreen() {
+        Group startGroup = new Group();
+        String message = "TEST MESSAGE\n Second row Test\n Third row Test\n";
+        Text startMessage = new Text();
+        startGroup.getChildren().add(startMessage);
+        endScene = new Scene(startGroup, width, height, BACKGROUND);
+        stage.setScene(endScene);
+        writeHUD(startMessage, message, 20, (int)(width / 3.8), height / 2);
     }
 
     public void checkPlayerLoss () {
