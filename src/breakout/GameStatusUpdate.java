@@ -57,6 +57,8 @@ public class GameStatusUpdate extends Application {
 
     public static final Paint PADDLE_COLOR = Color.PLUM;
     private ArrayList<Brick> brickList;
+    private Scene endScene;
+    private Stage stage;
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -64,11 +66,12 @@ public class GameStatusUpdate extends Application {
 
     @Override
     public void start (Stage stage) throws InterruptedException {
+        this.stage = stage;
         brickList = new ArrayList <Brick>();
         ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
-        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
         scoreHUD = new Text();
         livesHUD = new Text();
         root = new Group();
@@ -100,6 +103,17 @@ public class GameStatusUpdate extends Application {
         launch(args);
     }
 
+    public void checkPlayerLoss () {
+        if(myPADDLE.getHP() <= 0) {
+            Group endGroup = new Group();
+            Text endMessage = new Text();
+            endGroup.getChildren().add(endMessage);
+            endScene = new Scene(endGroup, width, height, BACKGROUND);
+            stage.setScene(endScene);
+            writeHUD(endMessage, "GAME OVER", 50, (int)(width / 3.8), height / 2);
+        }
+    }
+
     public void step (double elapsedTime,Text text) {
 
 
@@ -107,6 +121,7 @@ public class GameStatusUpdate extends Application {
         updateBallPaddleSpeed();
         updateBrickBallSpeed(elapsedTime);
         updateOnLostBall();
+        checkPlayerLoss();
 
 
         ball.setX(ball.getX()+ BALL_SPEED_X * elapsedTime);
@@ -202,9 +217,9 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void writeHUD(Text text, String s, int font, int x, int y)
+    public void writeHUD(Text text, String s, int fontSize, int x, int y)
     {
-        text.setFont(new Font(font));
+        text.setFont(new Font(fontSize));
         text.setText(s);
         text.setX(x);
         text.setY(y);
