@@ -4,10 +4,13 @@ import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.layout.Pane;
@@ -17,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -60,6 +65,8 @@ public class GameStatusUpdate extends Application {
     private Scene startScene;
     private Scene endScene;
     private Stage stage;
+    private boolean pressedEnter;
+    private int currentLevel = 0;
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -68,25 +75,12 @@ public class GameStatusUpdate extends Application {
     @Override
     public void start (Stage stage) throws InterruptedException {
         this.stage = stage;
-        brickList = new ArrayList <Brick>();
-        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
-        ball.setArcHeight(BALL_DIAMETER);
-        ball.setArcWidth(BALL_DIAMETER);
-        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
-        scoreHUD = new Text();
-        livesHUD = new Text();
-        root = new Group();
 
-        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList);
-        Scene scene = new Scene(root, width, height, BACKGROUND);
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-
-        stage.setScene(scene);
-        stage.setTitle(TITLE);
-        stage.show();
-        updateScore(0);
-        updateLivesText();
         showStartScreen();
+//        stage.setScene(scene);
+//        stage.setTitle(TITLE);
+//        stage.show();
+
 
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
@@ -105,14 +99,38 @@ public class GameStatusUpdate extends Application {
         launch(args);
     }
 
-    public void showStartScreen() {
+    public void showStartScreen() throws InterruptedException {
+        pressedEnter = false;
         Group startGroup = new Group();
-        String message = "TEST MESSAGE\n Second row Test\n Third row Test\n";
+        String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
         Text startMessage = new Text();
         startGroup.getChildren().add(startMessage);
-        endScene = new Scene(startGroup, width, height, BACKGROUND);
-        stage.setScene(endScene);
+        startScene = new Scene(startGroup, width, height, BACKGROUND);
+
+        stage.setScene(startScene);
+        stage.setTitle(TITLE);
+        stage.show();
+
         writeHUD(startMessage, message, 20, (int)(width / 3.8), height / 2);
+        startScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+    }
+
+    public void createLevel() {
+        brickList = new ArrayList <Brick>();
+        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
+        ball.setArcHeight(BALL_DIAMETER);
+        ball.setArcWidth(BALL_DIAMETER);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
+        scoreHUD = new Text();
+        livesHUD = new Text();
+        root = new Group();
+
+        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList);
+        Scene scene = new Scene(root, width, height, BACKGROUND);
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        updateScore(0);
+        updateLivesText();
+        stage.setScene(scene);
     }
 
     public void checkPlayerLoss () {
@@ -127,18 +145,18 @@ public class GameStatusUpdate extends Application {
     }
 
     public void step (double elapsedTime,Text text) {
+        if(pressedEnter) {
+
+            updateBallWallSpeed();
+            updateBallPaddleSpeed();
+            updateBrickBallSpeed(elapsedTime);
+            updateOnLostBall();
+            checkPlayerLoss();
 
 
-        updateBallWallSpeed();
-        updateBallPaddleSpeed();
-        updateBrickBallSpeed(elapsedTime);
-        updateOnLostBall();
-        checkPlayerLoss();
-
-
-        ball.setX(ball.getX()+ BALL_SPEED_X * elapsedTime);
-        ball.setY(ball.getY()+ BALL_SPEED_Y * elapsedTime);
-
+            ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
+            ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
+        }
 
     }
 
@@ -213,6 +231,11 @@ public class GameStatusUpdate extends Application {
                     myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
                 }
             }
+        }
+        if (code == KeyCode.ENTER) {
+            pressedEnter = true;
+            currentLevel++;
+            createLevel();
         }
 
         if (code == KeyCode.R) {
