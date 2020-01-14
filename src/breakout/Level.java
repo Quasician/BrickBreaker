@@ -45,13 +45,14 @@ public class Level {
     public static final double GROWER_RATE = 1.1;
     public static final int GROWER_SIZE = 50;
     public static final int NUMBER_OF_BRICKS = 20;
-    public Text scoreHUD;
+    private Text scoreHUD;
+    private Text livesHUD;
 
     private Paddle myPADDLE;
     private Ball ball;
     private Group root;
 
-    public Level(int width, int height, Paint background, Group root, Ball ball, Paddle paddle, Text scoreHUD, ArrayList <Brick> brickList) {
+    public Level(int width, int height, Paint background, Group root, Ball ball, Paddle paddle, Text scoreHUD, Text livesHUD, ArrayList <Brick> brickList) {
         this.width = width;
         this.height = height;
         this.background = background;
@@ -60,6 +61,7 @@ public class Level {
         this.myPADDLE = paddle;
         this.scoreHUD = scoreHUD;
         this.brickList = brickList;
+        this.livesHUD = livesHUD;
         setUpLevel();
     }
 
@@ -108,6 +110,7 @@ public class Level {
         root.getChildren().add(rotatePane1);
         root.getChildren().add(rotatePane2);
         root.getChildren().add(scoreHUD);
+        root.getChildren().add(livesHUD);
         //root.getChildren().add(rect);
         // create a place to see the shapes
 

@@ -49,6 +49,7 @@ public class GameStatusUpdate extends Application {
     private Ball ball;
     private Paddle myPADDLE;
     private Text scoreHUD;
+    private Text livesHUD;
 
     private Group root;
 
@@ -69,15 +70,18 @@ public class GameStatusUpdate extends Application {
         ball.setArcWidth(BALL_DIAMETER);
         myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 3, PADDLE_COLOR);
         scoreHUD = new Text();
+        livesHUD = new Text();
         root = new Group();
 
-        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, brickList);
+        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList);
         Scene scene = new Scene(root, width, height, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
 
         stage.setScene(scene);
         stage.setTitle(TITLE);
         stage.show();
+        updateScore(0);
+        updateLivesText();
 
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
@@ -102,6 +106,7 @@ public class GameStatusUpdate extends Application {
         updateBallWallSpeed();
         updateBallPaddleSpeed();
         updateBrickBallSpeed(elapsedTime);
+        updateOnLostBall();
 
 
         ball.setX(ball.getX()+ BALL_SPEED_X * elapsedTime);
@@ -119,6 +124,14 @@ public class GameStatusUpdate extends Application {
         if(ball.getY()<=0)
         {
             BALL_SPEED_Y *= -1;
+        }
+    }
+
+    public void  updateOnLostBall() {
+        if(ball.getY()>=height) {
+            myPADDLE.decreaseHP();
+            updateLivesText();
+            handleKeyInput(KeyCode.R);
         }
     }
 
@@ -199,4 +212,7 @@ public class GameStatusUpdate extends Application {
         writeHUD(scoreHUD,"Score: "+score,30,0,height/20);
     }
 
+    public void updateLivesText() {
+        writeHUD(livesHUD,"Lives: "+ myPADDLE.getHP(),30,0,height/10);
+    }
 }
