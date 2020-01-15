@@ -75,6 +75,7 @@ public class GameStatusUpdate extends Application {
     @Override
     public void start (Stage stage) throws InterruptedException {
         this.stage = stage;
+        score = 0;
 
         showStartScreen();
 //        stage.setScene(scene);
@@ -128,7 +129,7 @@ public class GameStatusUpdate extends Application {
         Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList);
         Scene scene = new Scene(root, width, height, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        updateScore(0);
+        updateScore(score);
         updateLivesText();
         stage.setScene(scene);
     }
