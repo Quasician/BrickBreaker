@@ -20,9 +20,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 /**
@@ -31,6 +34,8 @@ import java.util.ArrayList;
  * @author Robert C. Duvall
  */
 public class GameStatusUpdate extends Application {
+    public levelInfo[] levels;
+
     public int BALL_SPEED_X = 120; //120
     public int BALL_SPEED_Y = 160;  //160
     public static int BALL_SPEED_TOTAL = 200;
@@ -66,17 +71,17 @@ public class GameStatusUpdate extends Application {
     private Scene endScene;
     private Stage stage;
     private boolean pressedEnter;
-    private int currentLevel = 0;
+    private int currentLevel = -1;
 
     /**
      * Initialize what will be displayed and how it will be updated.
      */
 
     @Override
-    public void start (Stage stage) throws InterruptedException {
+    public void start (Stage stage) throws FileNotFoundException {
         this.stage = stage;
         score = 0;
-
+        initScenes();
         showStartScreen();
 //        stage.setScene(scene);
 //        stage.setTitle(TITLE);
@@ -100,7 +105,38 @@ public class GameStatusUpdate extends Application {
         launch(args);
     }
 
-    public void showStartScreen() throws InterruptedException {
+    public void initScenes() throws FileNotFoundException {
+        int fileNumber = new File("./resources/").listFiles().length;
+        //System.out.println(fileNumber);
+        levels = new levelInfo[fileNumber];
+
+        File directory = new File("./resources/");
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (int x = 0; x <files.length; x++) {
+                // Do something with child
+                Scanner sc = new Scanner(files[x]);
+                levelInfo levelText = new levelInfo(sc.nextInt());
+                for(int i = 0; i< levelText.getRingNumber();i++)
+                {
+                    int x_init = sc.nextInt();
+                    int y_init = sc.nextInt();
+                    int circleNumber = sc.nextInt();
+                    int radiusOfPath = sc.nextInt();
+                    int brickWidth = sc.nextInt();
+                    int brickHeight = sc.nextInt();
+                    int hp = sc.nextInt();
+                    ringInfo ringText = new ringInfo(x_init,y_init,circleNumber,radiusOfPath,brickWidth,brickHeight,hp);
+                    levelText.getRingArray()[i] = ringText;
+                }
+                levels[x]= levelText;
+            }
+        } else {
+            System.out.println("THERE ARE NO FILES IN RESOURCE TO MAKE GAME LEVELS. ADD MORE FILES IN THE CORRECT FORMAT TO PLAY THE GAME");
+        }
+    }
+
+    public void showStartScreen(){
         pressedEnter = false;
         Group startGroup = new Group();
         String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
@@ -236,7 +272,7 @@ public class GameStatusUpdate extends Application {
         }
         if (code == KeyCode.ENTER) {
             pressedEnter = true;
-            currentLevel++;
+            currentLevel = 1;
             createLevel();
         }
 

@@ -17,6 +17,7 @@ public class ringInfo {
         this.radiusOfPath = radiusOfPath;
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
+        this.hp = hp;
     }
 
     public int getX()
