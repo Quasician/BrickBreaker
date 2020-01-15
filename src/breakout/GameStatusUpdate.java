@@ -126,7 +126,8 @@ public class GameStatusUpdate extends Application {
                     int brickWidth = sc.nextInt();
                     int brickHeight = sc.nextInt();
                     int hp = sc.nextInt();
-                    ringInfo ringText = new ringInfo(x_init,y_init,circleNumber,radiusOfPath,brickWidth,brickHeight,hp);
+                    int ccw = sc.nextInt();
+                    ringInfo ringText = new ringInfo(x_init,y_init,circleNumber,radiusOfPath,brickWidth,brickHeight,hp, ccw);
                     levelText.getRingArray()[i] = ringText;
                 }
                 levels[x]= levelText;
@@ -162,7 +163,7 @@ public class GameStatusUpdate extends Application {
         livesHUD = new Text();
         root = new Group();
 
-        Level level = new Level(SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList);
+        Level level = new Level(currentLevel, SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList, levels);
         Scene scene = new Scene(root, width, height, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         updateScore(score);

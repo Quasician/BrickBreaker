@@ -8,8 +8,9 @@ public class ringInfo {
     private int brickWidth;
     private int brickHeight;
     private int hp;
+    private int ccw;
 
-    public ringInfo(int x_init, int y_init, int circleNumber, int radiusOfPath, int brickWidth, int brickHeight, int hp)
+    public ringInfo(int x_init, int y_init, int circleNumber, int radiusOfPath, int brickWidth, int brickHeight, int hp, int ccw)
     {
         this.x_init = x_init;
         this.y_init = y_init;
@@ -18,6 +19,7 @@ public class ringInfo {
         this.brickWidth = brickWidth;
         this.brickHeight = brickHeight;
         this.hp = hp;
+        this.ccw = ccw;
     }
 
     public int getX()
@@ -53,5 +55,10 @@ public class ringInfo {
     public int getHp()
     {
         return hp;
+    }
+
+    public int getCCW()
+    {
+        return ccw;
     }
 }
