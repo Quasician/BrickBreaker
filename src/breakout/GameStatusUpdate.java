@@ -140,7 +140,8 @@ public class GameStatusUpdate extends Application {
             endGroup.getChildren().add(endMessage);
             endScene = new Scene(endGroup, width, height, BACKGROUND);
             stage.setScene(endScene);
-            writeHUD(endMessage, "GAME OVER", 50, (int)(width / 3.8), height / 2);
+            writeHUD(endMessage, "GAME OVER\nPRESS ENTER\nTO PLAY AGAIN", 50, (int)(width / 8), height / 2);
+            endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
         }
     }
 
