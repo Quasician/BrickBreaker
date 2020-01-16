@@ -354,6 +354,12 @@ public class GameStatusUpdate extends Application {
                 score = 0;
                 createLevel();
             }
+            else if(desiredLevel >levels.length)
+            {
+                currentLevel = levels.length;
+                score = 0;
+                createLevel();
+            }
         }
 
         if (code == KeyCode.R) {
