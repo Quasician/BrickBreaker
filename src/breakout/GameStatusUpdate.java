@@ -343,8 +343,17 @@ public class GameStatusUpdate extends Application {
             pressedEnter = true;
             currentLevel = 1;
             score = 0;
-
             createLevel();
+        }
+
+        if (code.isDigitKey()) {
+            int desiredLevel = Integer.parseInt(code.getChar());
+            if((desiredLevel)>=0 && (desiredLevel)<=levels.length)
+            {
+                currentLevel = desiredLevel;
+                score = 0;
+                createLevel();
+            }
         }
 
         if (code == KeyCode.R) {
