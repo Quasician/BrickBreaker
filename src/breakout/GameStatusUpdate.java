@@ -121,7 +121,13 @@ public class GameStatusUpdate extends Application {
             for (int x = 0; x <files.length; x++) {
                 // Do something with child
                 Scanner sc = new Scanner(files[x]);
-                levelInfo levelText = new levelInfo(sc.nextInt());
+                int firstNumInLine = sc.nextInt();
+                while (firstNumInLine == 0) {
+                    sc.nextLine();
+                    firstNumInLine = sc.nextInt();
+                    //System.out.println("Found Comment");
+                }
+                levelInfo levelText = new levelInfo(firstNumInLine);
                 for(int i = 0; i< levelText.getRingNumber();i++)
                 {
                     int x_init = sc.nextInt();
@@ -183,7 +189,9 @@ public class GameStatusUpdate extends Application {
     }
 
     public void checkPlayerLoss () {
+
         if(myPADDLE.getHP() <= 0) {
+            System.out.println(myPADDLE.getHP());
             playerLost = true;
             Group endGroup = new Group();
             Text endMessage = new Text();
@@ -237,7 +245,9 @@ public class GameStatusUpdate extends Application {
         if(ball.getY()>=height) {
             myPADDLE.decreaseHP();
             updateLivesText();
-            handleKeyInput(KeyCode.R);
+            if(myPADDLE.getHP() > 0) {
+                handleKeyInput(KeyCode.R);
+            }
         }
     }
 
