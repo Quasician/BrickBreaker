@@ -163,7 +163,7 @@ public class Level {
             int y = (int)(ring.getY() + ring.getRadiusOfPath() * Math.sin(2 * Math.PI * i / ring.getCircleNumber()));
             //System.out.println(x + " " + y + " " + radiusBall);s
             //Circle c = new Circle (x, y, radiusBall, Color.RED);
-            System.out.println(x);
+            //System.out.println(x);
             list.add(new Brick(x-ring.getBrickWidth()/2,y-ring.getBrickHeight()/2, ring.getBrickWidth(), ring.getBrickHeight(), ring.getHp()));
         }
         return list;

@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 
@@ -36,8 +37,10 @@ import java.util.Scanner;
 public class GameStatusUpdate extends Application {
     public levelInfo[] levels;
 
-    public int BALL_SPEED_X = 120; //120
-    public int BALL_SPEED_Y = 160;  //160
+    public final static int BALL_SPEED_X_INIT = 100; //120
+    public final static int BALL_SPEED_Y_INIT = 160;  //160
+    public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
+    public int BALL_SPEED_Y = BALL_SPEED_Y_INIT;  //160
     public static int BALL_SPEED_TOTAL = 200;
     public static final int PADDLE_WIDTH = 75;
     public static final int PADDLE_HEIGHT = 50/3;
@@ -69,6 +72,7 @@ public class GameStatusUpdate extends Application {
     private ArrayList<Brick> brickList;
     private Scene startScene;
     private Scene endScene;
+    private Scene winScene;
     private Stage stage;
     private boolean pressedEnter;
     private int currentLevel = -1;
@@ -80,6 +84,7 @@ public class GameStatusUpdate extends Application {
     @Override
     public void start (Stage stage) throws FileNotFoundException {
         this.stage = stage;
+        playerLost = false;
         score = 0;
         initScenes();
         showStartScreen();
@@ -154,6 +159,8 @@ public class GameStatusUpdate extends Application {
     }
 
     public void createLevel() {
+        BALL_SPEED_X = BALL_SPEED_X_INIT;
+        BALL_SPEED_Y = BALL_SPEED_Y_INIT;
         brickList = new ArrayList <Brick>();
         ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
@@ -173,6 +180,7 @@ public class GameStatusUpdate extends Application {
 
     public void checkPlayerLoss () {
         if(myPADDLE.getHP() <= 0) {
+            playerLost = true;
             Group endGroup = new Group();
             Text endMessage = new Text();
             endGroup.getChildren().add(endMessage);
@@ -182,16 +190,26 @@ public class GameStatusUpdate extends Application {
             endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
         }
     }
+    public void drawWinScreen () {
+
+        Group winGroup = new Group();
+        Text winMessage = new Text();
+        winGroup.getChildren().add(winMessage);
+        winScene = new Scene(winGroup, width, height, BACKGROUND);
+        stage.setScene(winScene);
+        writeHUD(winMessage, "YOU WIN\nYOUR SCORE:\n" + score, 50, (int)(width / 8), height / 2);
+        winScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
+
+    }
 
     public void step (double elapsedTime,Text text) {
         if(pressedEnter) {
-
+            deleteDeadBricks();
             updateBallWallSpeed();
             updateBallPaddleSpeed();
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
-
 
             ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
             ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
@@ -254,6 +272,46 @@ public class GameStatusUpdate extends Application {
         }
     }
 
+
+    public Iterator<Brick> iterator() {
+        Iterator<Brick> it = new Iterator<Brick>() {
+
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return brickList.get(currentIndex+1) != null;
+            }
+
+            @Override
+            public Brick next() {
+                return brickList.get(currentIndex++);
+            }
+
+            @Override
+            public void remove() {
+                brickList.remove(currentIndex);
+            }
+        };
+        return it;
+    }
+
+    public void  deleteDeadBricks() {
+
+        Iterator<Brick> iterator = brickList.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().getHP() == 0) {
+                iterator.remove();
+            }
+        }
+        if(brickList.size() == 0)
+        {
+            currentLevel++;
+            createLevel();
+        }
+
+    }
+
     public void handleKeyInput(KeyCode code) {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
@@ -274,16 +332,15 @@ public class GameStatusUpdate extends Application {
         if (code == KeyCode.ENTER) {
             pressedEnter = true;
             currentLevel = 1;
+            if(playerLost)
+            {
+                score = 0;
+            }
             createLevel();
         }
 
         if (code == KeyCode.R) {
-            ball.setX(width / 2 - PADDLE_HEIGHT / 2);
-            ball.setY(3.5* height / 5);
-            myPADDLE.setX(width / 2 - PADDLE_WIDTH / 2);
-            myPADDLE.setY(4* height / 5);
-            BALL_SPEED_X = 100;
-            BALL_SPEED_Y = 100;
+            createLevel();
         }
         if (code == KeyCode.L) {
             myPADDLE.increaseHP();
