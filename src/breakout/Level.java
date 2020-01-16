@@ -74,14 +74,14 @@ public class Level {
         // create one top level collection to organize the things in the scene
         for (int i = 0; i<levels[levelNumber].getRingArray().length;i++)
         {
-            BorderPane rotatePane = new BorderPane();
-            rotatePane.setPrefSize(width, height*.7);
+            //BorderPane rotatePane = new BorderPane();
+            //rotatePane.setPrefSize(width, height*.7);
             Group rotateGroup1 = new Group();
 
             ArrayList <Brick> ringList = createBricksInCircles (levels[levelNumber].getRingArray()[i]);
             rotateGroup1.getChildren().addAll(ringList);
-            rotatePane.setCenter(rotateGroup1);
-            root.getChildren().add(rotatePane);
+            //rotatePane.setCenter(rotateGroup1);
+            //root.getChildren().add(rotatePane);
             brickList.addAll(ringList);
 
             RotateTransition grouprt1 = new RotateTransition(Duration.millis(3000), rotateGroup1);
@@ -95,6 +95,7 @@ public class Level {
             {
                 grouprt1.setRate(-.3);
             }
+            root.getChildren().add(rotateGroup1);
         }
 
         root.getChildren().add(ball);
@@ -162,6 +163,7 @@ public class Level {
             int y = (int)(ring.getY() + ring.getRadiusOfPath() * Math.sin(2 * Math.PI * i / ring.getCircleNumber()));
             //System.out.println(x + " " + y + " " + radiusBall);s
             //Circle c = new Circle (x, y, radiusBall, Color.RED);
+            System.out.println(x);
             list.add(new Brick(x-ring.getBrickWidth()/2,y-ring.getBrickHeight()/2, ring.getBrickWidth(), ring.getBrickHeight(), ring.getHp()));
         }
         return list;
