@@ -144,6 +144,8 @@ public class GameStatusUpdate extends Application {
 
     public void showStartScreen(){
         pressedEnter = false;
+        playerLost = false;
+        playerWon = false;
         Group startGroup = new Group();
         String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
         Text startMessage = new Text();
@@ -159,6 +161,8 @@ public class GameStatusUpdate extends Application {
     }
 
     public void createLevel() {
+        playerLost = false;
+        playerWon = false;
         BALL_SPEED_X = BALL_SPEED_X_INIT;
         BALL_SPEED_Y = BALL_SPEED_Y_INIT;
         brickList = new ArrayList <Brick>();
@@ -173,7 +177,7 @@ public class GameStatusUpdate extends Application {
         Level level = new Level(currentLevel, SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList, levels);
         Scene scene = new Scene(root, width, height, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        updateScore(score);
+        updateScore(0);
         updateLivesText();
         stage.setScene(scene);
     }
@@ -191,7 +195,7 @@ public class GameStatusUpdate extends Application {
         }
     }
     public void drawWinScreen () {
-
+        playerWon = true;
         Group winGroup = new Group();
         Text winMessage = new Text();
         winGroup.getChildren().add(winMessage);
@@ -203,7 +207,7 @@ public class GameStatusUpdate extends Application {
     }
 
     public void step (double elapsedTime,Text text) {
-        if(pressedEnter) {
+        if(pressedEnter && !playerWon && !playerLost) {
             deleteDeadBricks();
             updateBallWallSpeed();
             updateBallPaddleSpeed();
@@ -220,7 +224,7 @@ public class GameStatusUpdate extends Application {
     public void  updateBallWallSpeed() {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
-            System.out.println(ball.getX());
+            //System.out.println(ball.getX());
             BALL_SPEED_X *= -1;
         }
         if(ball.getY()<=0)
@@ -306,8 +310,14 @@ public class GameStatusUpdate extends Application {
         }
         if(brickList.size() == 0)
         {
-            currentLevel++;
-            createLevel();
+            if(currentLevel == levels.length)
+            {
+                drawWinScreen();
+            }else
+            {
+                currentLevel++;
+                createLevel();
+            }
         }
 
     }
@@ -332,10 +342,8 @@ public class GameStatusUpdate extends Application {
         if (code == KeyCode.ENTER) {
             pressedEnter = true;
             currentLevel = 1;
-            if(playerLost)
-            {
-                score = 0;
-            }
+            score = 0;
+
             createLevel();
         }
 
