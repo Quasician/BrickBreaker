@@ -8,10 +8,9 @@ public class PowerUp extends GameObject{
     private boolean speedUpPaddle;
     private boolean slowDownBalls;
     private boolean increasedPaddle;
-    public PowerUp(int x_init, int y_init, Paint color, int type)
+    public PowerUp(int x_init, int y_init, int type)
     {
         super(x_init, y_init, POWERUP_WIDTH, POWERUP_WIDTH);
-        super.setFill(color);
         this.x_init = x_init;
         this.y_init = y_init;
         hp = 1;
@@ -23,14 +22,17 @@ public class PowerUp extends GameObject{
         if(powerUpType == 0)
         {
             speedUpPaddle = true;
+            super.setFill(Color.GREEN);
         }
         else if (powerUpType ==1)
         {
             slowDownBalls = true;
+            super.setFill(Color.RED);
         }
         else if (powerUpType ==2)
         {
             increasedPaddle = true;
+            super.setFill(Color.BLUE);
         }
     }
     public void destroyPowerUp()
@@ -41,6 +43,15 @@ public class PowerUp extends GameObject{
     public void decreaseHP()
     {
         hp--;
+    }
+
+    public boolean[] getTypeArray()
+    {
+        boolean[] type = new boolean[3];
+        type[0] = speedUpPaddle;
+        type[1] = slowDownBalls;
+        type[2] = increasedPaddle;
+        return type;
     }
 
 }
