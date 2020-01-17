@@ -102,14 +102,6 @@ public class GameStatusUpdate extends Application {
         animation.play();
     }// attach scene to the stage and display it
 
-
-    /**
-     * Start the program.
-     */
-    public static void main (String[] args) {
-        launch(args);
-    }
-
     public void initScenes() throws FileNotFoundException {
         int fileNumber = new File("./resources/").listFiles().length;
         //System.out.println(fileNumber);
@@ -396,5 +388,12 @@ public class GameStatusUpdate extends Application {
 
     public void updateLivesText() {
         writeHUD(livesHUD,"Lives: "+ myPADDLE.getHP(),30,0,height/10);
+    }
+
+    /**
+     * Start the program.
+     */
+    public static void main (String[] args) {
+        launch(args);
     }
 }
