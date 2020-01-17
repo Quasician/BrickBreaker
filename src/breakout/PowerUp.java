@@ -22,7 +22,7 @@ public class PowerUp extends GameObject{
         if(powerUpType == 0)
         {
             speedUpPaddle = true;
-            super.setFill(Color.GREEN);
+            super.setFill(Color.ORANGE);
         }
         else if (powerUpType ==1)
         {

@@ -70,6 +70,7 @@ public class GameStatusUpdate extends Application {
 
     public static final Paint PADDLE_COLOR = Color.PLUM;
     private ArrayList<Brick> brickList;
+    private ArrayList<PowerUp> powerUpList;
     private Scene startScene;
     private Scene endScene;
     private Scene winScene;
@@ -164,6 +165,7 @@ public class GameStatusUpdate extends Application {
         BALL_SPEED_X = BALL_SPEED_X_INIT;
         BALL_SPEED_Y = BALL_SPEED_Y_INIT;
         brickList = new ArrayList <Brick>();
+        powerUpList = new ArrayList <PowerUp>();
         ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
@@ -194,6 +196,7 @@ public class GameStatusUpdate extends Application {
             endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
         }
     }
+
     public void drawWinScreen () {
         playerWon = true;
         Group winGroup = new Group();
@@ -306,7 +309,18 @@ public class GameStatusUpdate extends Application {
 
         Iterator<Brick> iterator = brickList.iterator();
         while (iterator.hasNext()) {
-            if (iterator.next().getHP() == 0) {
+            Brick brick = iterator.next();
+            if (brick.getHP() == 0) {
+
+                //int chanceOfPowerUp = (int)Math.round(Math.random());
+                int chanceOfPowerUp = 1;
+                if(chanceOfPowerUp == 1)
+                {
+                    int powerUpType = (int)(Math.random() * 3);
+                    PowerUp powerUp = new PowerUp((int)brick.getX(),(int)brick.getY(), powerUpType);
+                    powerUpList.add(powerUp);
+                    root.getChildren().add(powerUp);
+                }
                 iterator.remove();
             }
         }
