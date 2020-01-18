@@ -88,6 +88,8 @@ public class GameStatusUpdate extends Application {
     private boolean pressedEnter;
     private int currentLevel = -1;
 
+    private int currentHP = 3;
+
     /**
      * Initialize what will be displayed and how it will be updated.
      */
@@ -181,7 +183,7 @@ public class GameStatusUpdate extends Application {
         ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 , BALL_Y_INIT,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
-        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentHP, PADDLE_COLOR);
         scoreHUD = new Text();
         livesHUD = new Text();
         root = new Group();
@@ -192,6 +194,7 @@ public class GameStatusUpdate extends Application {
         updateScore(0);
         updateLivesText();
         stage.setScene(scene);
+        System.out.println("YEET ##");
     }
 
     public void checkPlayerLoss () {
@@ -257,6 +260,7 @@ public class GameStatusUpdate extends Application {
     public void  updateOnLostBall() {
         if(ball.getY()>=height) {
             myPADDLE.decreaseHP();
+            currentHP--;
             updateLivesText();
             if(myPADDLE.getHP() > 0) {
                 handleKeyInput(KeyCode.R);
@@ -445,7 +449,7 @@ public class GameStatusUpdate extends Application {
 
 
     public void handleKeyInput(KeyCode code) {
-        if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
+        if ((code == KeyCode.LEFT || code == KeyCode.RIGHT) && pressedEnter) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
             if (intersection.getBoundsInLocal().getWidth() == -1) {
                 if (code == KeyCode.RIGHT && myPADDLE.getX() + PADDLE_WIDTH< width ) {
@@ -464,12 +468,15 @@ public class GameStatusUpdate extends Application {
         }
         if (code == KeyCode.ENTER) {
             pressedEnter = true;
+            //System.out.println("YEET");
             currentLevel = 1;
             score = 0;
+            playerLost = false;
+            playerWon = false;
             createLevel();
         }
 
-        if (code.isDigitKey()) {
+        if (code.isDigitKey() && pressedEnter) {
             int desiredLevel = Integer.parseInt(code.getChar());
             if((desiredLevel)>=0 && (desiredLevel)<=levels.length)
             {
@@ -485,11 +492,12 @@ public class GameStatusUpdate extends Application {
             }
         }
 
-        if (code == KeyCode.R) {
+        if (code == KeyCode.R && pressedEnter) {
             createLevel();
         }
-        if (code == KeyCode.L) {
+        if (code == KeyCode.L && pressedEnter) {
             myPADDLE.increaseHP();
+            currentHP++;
             updateLivesText();
         }
     }
