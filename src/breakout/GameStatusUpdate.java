@@ -37,27 +37,6 @@ import java.util.Scanner;
 public class GameStatusUpdate extends Application {
     public levelInfo[] levels;
 
-    public final static int BALL_SPEED_X_INIT = 100; //120
-    public final static int BALL_SPEED_Y_INIT = 160;  //160
-    public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
-    public int BALL_SPEED_Y = BALL_SPEED_Y_INIT;  //160
-    public static int BALL_SPEED_TOTAL = 200;
-    public static final int PADDLE_WIDTH_INIT = 75;
-    public int PADDLE_WIDTH = PADDLE_WIDTH_INIT;
-    public static final int PADDLE_HEIGHT = 50/3;
-    public static final int PADDLE_SPEED_INIT = 5;
-    public int PADDLE_SPEED = PADDLE_SPEED_INIT;
-
-    public static final int POWER_UP_DESCEND_SPEED = 100;
-
-
-    public static final String TITLE = "Thomas's Breakout Game";
-    public static final int SIZE = 600;
-    public static final int FRAMES_PER_SECOND = 60;
-    public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
-    public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    public static final Paint BACKGROUND = Color.AZURE;
-
     private boolean playerLost;
     private boolean playerWon;
     private int levelNumber;
@@ -68,6 +47,30 @@ public class GameStatusUpdate extends Application {
     private Paddle myPADDLE;
     private Text scoreHUD;
     private Text livesHUD;
+
+    public final static double MAXBOUNCEANGLE = Math.PI*.85;
+    public final static int BALL_SPEED_X_INIT = 0; //120
+    public final static int BALL_SPEED_Y_INIT = 200;  //160
+    public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
+    public int BALL_SPEED_Y = BALL_SPEED_Y_INIT;  //160
+    public static int BALL_SPEED_TOTAL = 200;
+    public static final int PADDLE_WIDTH_INIT = 75;
+    public int PADDLE_WIDTH = PADDLE_WIDTH_INIT;
+    public static final int PADDLE_HEIGHT = 50/3;
+    public static final int PADDLE_SPEED_INIT = 5;
+    public int PADDLE_SPEED = PADDLE_SPEED_INIT;
+    public static final int PADDLE_Y_INIT = (int)(height*.975);
+    public static final int BALL_Y_INIT = (int)(3.5* height / 5);
+    public static final int POWER_UP_DESCEND_SPEED = 100;
+
+
+    public static final String TITLE = "Thomas's Breakout Game";
+    public static final int SIZE = 600;
+    public static final int FRAMES_PER_SECOND = 60;
+    public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
+    public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
+    public static final Paint BACKGROUND = Color.AZURE;
+
 
     private Group root;
 
@@ -173,10 +176,10 @@ public class GameStatusUpdate extends Application {
         PADDLE_SPEED = PADDLE_SPEED_INIT;
         brickList = new ArrayList <Brick>();
         powerUpList = new ArrayList <PowerUp>();
-        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
+        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 , BALL_Y_INIT,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
-        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
+        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, 1, PADDLE_COLOR);
         scoreHUD = new Text();
         livesHUD = new Text();
         root = new Group();
@@ -192,7 +195,7 @@ public class GameStatusUpdate extends Application {
     public void checkPlayerLoss () {
 
         if(myPADDLE.getHP() <= 0) {
-            System.out.println(myPADDLE.getHP());
+            //System.out.println(myPADDLE.getHP());
             playerLost = true;
             Group endGroup = new Group();
             Text endMessage = new Text();
@@ -220,7 +223,7 @@ public class GameStatusUpdate extends Application {
         if(pressedEnter && !playerWon && !playerLost) {
             deleteDeadBricksCreatePowerUps();
             updateBallWallSpeed();
-            updateBallPaddleSpeed();
+            updateBallPaddleSpeed(elapsedTime);
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
@@ -272,6 +275,7 @@ public class GameStatusUpdate extends Application {
                 {
                     BALL_SPEED_X /= 2;
                     BALL_SPEED_Y /= 2;
+                    BALL_SPEED_TOTAL /= 2;
                     //System.out.println("SLOW BALLS");
                 }
                 else if(powerUp.getTypeArray()[2])
@@ -280,7 +284,7 @@ public class GameStatusUpdate extends Application {
                     int currentLives = myPADDLE.getHP();
                     root.getChildren().remove(myPADDLE);
                     PADDLE_WIDTH *= 2;
-                    myPADDLE = new Paddle(x_val, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
+                    myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
                     root.getChildren().add(myPADDLE);
                     //System.out.println("BIG PADDLE");
                 }
@@ -289,17 +293,30 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateBallPaddleSpeed() {
+    public void  updateBallPaddleSpeed(double elapsedTime) {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
-            if(ball.getY() + ball.getHeight()/2>= myPADDLE.getY() && ball.getY() + ball.getHeight()/2<= myPADDLE.getY()+myPADDLE.getHeight())
-            {
-                BALL_SPEED_X *= -1;
-            }
-            if(ball.getX() + ball.getWidth()/2 >= myPADDLE.getX()  && ball.getX() + ball.getWidth()/2<= myPADDLE.getX()+myPADDLE.getWidth()){
-//                double temp =  paddle.getX()+paddle.getWidth();
-//                System.out.println(ball.getCenterX() + " " + paddle.getX() + " " +  temp);
-                BALL_SPEED_Y *= -1;
+//            if(ball.getX() < myPADDLE.getX() || ball.getX() > myPADDLE.getX()+ myPADDLE.getWidth())
+//            {
+//                BALL_SPEED_X *= -1;
+//            }
+            if(ball.getY() < myPADDLE.getY()){
+
+                double ballPaddleXDiff = (myPADDLE.getX()+PADDLE_WIDTH/2) - (ball.getX() + ball.getWidth()/2);
+
+                double normalizedBallPaddleXDiff = (ballPaddleXDiff/(PADDLE_WIDTH));
+                double angle = normalizedBallPaddleXDiff * MAXBOUNCEANGLE;
+
+
+
+                BALL_SPEED_Y = (int)(-BALL_SPEED_TOTAL * Math.cos(angle));
+                BALL_SPEED_X = -1 * (int)(BALL_SPEED_TOTAL * Math.sin(angle));
+
+                //ball.setX(ball.getX() + 2* BALL_SPEED_X * elapsedTime);
+                //ball.setY(ball.getY() + 2* -BALL_SPEED_Y * elapsedTime);
+                System.out.println("ANGLE: " +angle);
+                System.out.println("X: " + BALL_SPEED_X);
+                System.out.println("Y: " +BALL_SPEED_Y);
             }
 
         }
@@ -385,8 +402,8 @@ public class GameStatusUpdate extends Application {
             Brick brick = brickIterator.next();
             if (brick.getHP() == 0) {
 
-                int chanceOfPowerUp = (int)Math.round(Math.random());
-                if(chanceOfPowerUp == 1)
+                double chanceOfPowerUp = Math.random();
+                if(chanceOfPowerUp < .3)
                 {
                     int powerUpType = (int)(Math.random() * 3);
                     PowerUp powerUp = new PowerUp((int)brick.getX(),(int)brick.getY(), powerUpType);
@@ -422,11 +439,12 @@ public class GameStatusUpdate extends Application {
                     myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
                 }
             } else {
-                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getX() + ball.getWidth()/2) {
-                    myPADDLE.setX(myPADDLE.getX() + 3 * PADDLE_SPEED);
-                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getX() + ball.getWidth()/2) {
-                    myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
-                }
+
+//                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getX() + ball.getWidth()/2) {
+//                    myPADDLE.setX(myPADDLE.getX() + 3 * PADDLE_SPEED);
+//                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getX() + ball.getWidth()/2) {
+//                    myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
+//                }
             }
         }
         if (code == KeyCode.ENTER) {
