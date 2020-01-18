@@ -12,13 +12,10 @@
 0 The fifth number is the brick's height.
 0 The sixth number is the brick's width.
 0 The seventh number is the hit points (hp) of the brick.
-0 The eighth number is the direction of rotation. If one, the ring goes counter-clockwise, if zero ther ring goes clockwise.
+0 The eighth number is the direction of rotation. If one, the ring goes counter-clockwise, if zero the ring goes clockwise.
 
+1
+300 250 8 100 40 40 1 1
 
-
-
-2
-440 200 8 100 20 20 1 1
-240 200 4 50 20 20 1 1
 
 

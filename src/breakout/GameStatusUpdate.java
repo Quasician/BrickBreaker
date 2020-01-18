@@ -48,7 +48,7 @@ public class GameStatusUpdate extends Application {
     private Text scoreHUD;
     private Text livesHUD;
 
-    
+
 
     public final static double MAXBOUNCEANGLE = Math.PI*.7;
     public final static int BALL_SPEED_X_INIT = 0; //120
@@ -229,6 +229,7 @@ public class GameStatusUpdate extends Application {
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
+            updatePaddleX();
             lowerPowerUps(elapsedTime);
             updatePaddlePowerUp();
 
@@ -263,6 +264,15 @@ public class GameStatusUpdate extends Application {
         }
     }
 
+    public void  updatePaddleX() {
+        if(myPADDLE.getX()<0) {
+            myPADDLE.setX(0);
+        }
+        if(myPADDLE.getX()+PADDLE_WIDTH>width) {
+            myPADDLE.setX(width-PADDLE_WIDTH);
+        }
+    }
+
     public void  updatePaddlePowerUp() {
         Iterator<PowerUp> powerUpIterator = powerUpList.iterator();
         while (powerUpIterator.hasNext()) {
@@ -278,9 +288,9 @@ public class GameStatusUpdate extends Application {
                 }
                 else if(powerUp.getTypeArray()[1])
                 {
-                    BALL_SPEED_X /= 2;
-                    BALL_SPEED_Y /= 2;
-                    BALL_SPEED_TOTAL /= 2;
+                    BALL_SPEED_X *= .75;
+                    BALL_SPEED_Y *= .75;
+                    BALL_SPEED_TOTAL *= .75;
                     //System.out.println("SLOW BALLS");
                 }
                 else if(powerUp.getTypeArray()[2])

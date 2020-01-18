@@ -1,2 +1,20 @@
-1
-440 200 1 0 20 20 1 0
+0 Zero allows me to comment to explain my text file.
+0 Since I am doing jet ball there is not an easy way to display the hp of each brick in a ring inside of a text file
+0 So instead I will explain these number that I pass into my creation methods
+0
+0 The first number represents the number of rings in the level. This line wil be followed by ring information lines.
+0
+0 Each ring line consists of eighth numbers.
+0 The first number is the ring's x-coordinate.
+0 The second number is the ring's y-coordinate.
+0 The third number is number of bricks in the ring.
+0 The fourth number is the radius of the ring.
+0 The fifth number is the brick's height.
+0 The sixth number is the brick's width.
+0 The seventh number is the hit points (hp) of the brick.
+0 The eighth number is the direction of rotation. If one, the ring goes counter-clockwise, if zero the ring goes clockwise.
+
+2
+300 200 8 70 30 30 2 0
+300 200 8 150 40 40 1 1
+
