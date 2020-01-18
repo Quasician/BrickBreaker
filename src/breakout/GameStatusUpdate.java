@@ -39,7 +39,6 @@ public class GameStatusUpdate extends Application {
 
     private boolean playerLost;
     private boolean playerWon;
-    private int levelNumber;
     private int score;
     private static int width = 600;
     private static int height = 600;
@@ -61,8 +60,13 @@ public class GameStatusUpdate extends Application {
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED_INIT = 5;
     public int PADDLE_SPEED = PADDLE_SPEED_INIT;
+
+    public static final int PADDLE_X_INIT = width / 2 - PADDLE_WIDTH_INIT / 2;
     public static final int PADDLE_Y_INIT = (int)(height*.975);
+
+    public static final int BALL_X_INIT = width / 2 - PADDLE_HEIGHT / 2 ;
     public static final int BALL_Y_INIT = (int)(4* height / 5);
+
     public static final int POWER_UP_DESCEND_SPEED = 100;
 
 
@@ -98,15 +102,8 @@ public class GameStatusUpdate extends Application {
     @Override
     public void start (Stage stage) throws FileNotFoundException {
         this.stage = stage;
-        playerLost = false;
-        score = 0;
         initScenes();
         showStartScreen();
-//        stage.setScene(scene);
-//        stage.setTitle(TITLE);
-//        stage.show();
-
-
 
         // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY,scoreHUD));
@@ -158,6 +155,7 @@ public class GameStatusUpdate extends Application {
         pressedEnter = false;
         playerLost = false;
         playerWon = false;
+        score = 0;
         Group startGroup = new Group();
         String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
         Text startMessage = new Text();
@@ -181,13 +179,18 @@ public class GameStatusUpdate extends Application {
         PADDLE_SPEED = PADDLE_SPEED_INIT;
         brickList = new ArrayList <Brick>();
         powerUpList = new ArrayList <PowerUp>();
-        ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 , BALL_Y_INIT,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
+        ball = new Ball(BALL_X_INIT, BALL_Y_INIT,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
         ball.setArcHeight(BALL_DIAMETER);
         ball.setArcWidth(BALL_DIAMETER);
-        myPADDLE = new Paddle(width / 2 - PADDLE_WIDTH / 2, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentHP, PADDLE_COLOR);
+        myPADDLE = new Paddle(PADDLE_X_INIT, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentHP, PADDLE_COLOR);
         scoreHUD = new Text();
         livesHUD = new Text();
         root = new Group();
+
+        root.getChildren().add(ball);
+        root.getChildren().add(myPADDLE);
+        root.getChildren().add(scoreHUD);
+        root.getChildren().add(livesHUD);
 
         Level level = new Level(currentLevel, SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList, levels);
         Scene scene = new Scene(root, width, height, BACKGROUND);
@@ -478,7 +481,12 @@ public class GameStatusUpdate extends Application {
         }
 
         if (code == KeyCode.R && pressedEnter) {
-            createLevel();
+            ball.setX(BALL_X_INIT);
+            ball.setY(BALL_Y_INIT);
+            BALL_SPEED_X = BALL_SPEED_X_INIT;
+            BALL_SPEED_Y = BALL_SPEED_Y_INIT;
+            myPADDLE.setX(PADDLE_X_INIT);
+            myPADDLE.setY(PADDLE_Y_INIT);
         }
         if (code == KeyCode.L && pressedEnter) {
             myPADDLE.increaseHP();

@@ -5,46 +5,18 @@ import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
-import java.awt.*;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Level {
     protected int width;
     protected int height;
     protected Paint background;
-    protected int score;
-    protected int maxScore;
     protected ArrayList <Brick> brickList;
 
-
-    public static final Paint HIGHLIGHT = Color.OLIVEDRAB;
-    public static final String BALL_IMAGE = "ball.gif";
-    public static int BALL_SPEED_X = 120;
-    public static int BALL_SPEED_Y = -160;
-    public static int BALL_SPEED_TOTAL = 200;
-    public static final int BALL_DIAMETER = 12;
-    public static final Paint PADDLE_COLOR = Color.PLUM;
-    public static final int PADDLE_WIDTH = 75;
-    public static final int PADDLE_HEIGHT = 50/3;
-    public static final int PADDLE_SPEED = 5;
-    public static final double PADDLE_CORNER_THRESHOLD = BALL_DIAMETER/1.5;
-    public static final Paint GROWER_COLOR = Color.BISQUE;
-    public static final double GROWER_RATE = 1.1;
-    public static final int GROWER_SIZE = 50;
-    public static final int NUMBER_OF_BRICKS = 20;
     private Text scoreHUD;
     private Text livesHUD;
     private int levelNumber;
@@ -93,11 +65,6 @@ public class Level {
             }
             root.getChildren().add(rotateGroup1);
         }
-
-        root.getChildren().add(ball);
-        root.getChildren().add(myPADDLE);
-        root.getChildren().add(scoreHUD);
-        root.getChildren().add(livesHUD);
 
         return;
     }
