@@ -48,7 +48,9 @@ public class GameStatusUpdate extends Application {
     private Text scoreHUD;
     private Text livesHUD;
 
-    public final static double MAXBOUNCEANGLE = Math.PI*.85;
+    
+
+    public final static double MAXBOUNCEANGLE = Math.PI*.7;
     public final static int BALL_SPEED_X_INIT = 0; //120
     public final static int BALL_SPEED_Y_INIT = 200;  //160
     public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
@@ -222,8 +224,8 @@ public class GameStatusUpdate extends Application {
     public void step (double elapsedTime,Text text) {
         if(pressedEnter && !playerWon && !playerLost) {
             deleteDeadBricksCreatePowerUps();
-            updateBallWallSpeed();
-            updateBallPaddleSpeed(elapsedTime);
+            updateBallWallSpeed(elapsedTime);
+            updateBallPaddleSpeed();
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
@@ -236,16 +238,19 @@ public class GameStatusUpdate extends Application {
 
     }
 
-    public void  updateBallWallSpeed() {
+    public void  updateBallWallSpeed(double elapsedTime) {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
             //System.out.println(ball.getX());
             BALL_SPEED_X *= -1;
+            ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
         }
         if(ball.getY()<=0)
         {
             BALL_SPEED_Y *= -1;
+            ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
         }
+
     }
 
     public void  updateOnLostBall() {
@@ -293,7 +298,7 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateBallPaddleSpeed(double elapsedTime) {
+    public void  updateBallPaddleSpeed() {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
 //            if(ball.getX() < myPADDLE.getX() || ball.getX() > myPADDLE.getX()+ myPADDLE.getWidth())
