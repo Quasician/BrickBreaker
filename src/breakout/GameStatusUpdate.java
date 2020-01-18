@@ -44,7 +44,8 @@ public class GameStatusUpdate extends Application {
     public static int BALL_SPEED_TOTAL = 200;
     public static final int PADDLE_WIDTH = 75;
     public static final int PADDLE_HEIGHT = 50/3;
-    public static final int PADDLE_SPEED = 5;
+    public static final int PADDLE_SPEED_INIT = 5;
+    public int PADDLE_SPEED = PADDLE_SPEED_INIT;
 
     public static final int POWER_UP_DESCEND_SPEED = 100;
 
@@ -167,6 +168,7 @@ public class GameStatusUpdate extends Application {
         playerWon = false;
         BALL_SPEED_X = BALL_SPEED_X_INIT;
         BALL_SPEED_Y = BALL_SPEED_Y_INIT;
+        PADDLE_SPEED = PADDLE_SPEED_INIT;
         brickList = new ArrayList <Brick>();
         powerUpList = new ArrayList <PowerUp>();
         ball = new Ball(width / 2 - PADDLE_HEIGHT / 2 ,(int)(3.5* height / 5) ,BALL_DIAMETER, BALL_DIAMETER, Color.BLACK);
@@ -214,13 +216,14 @@ public class GameStatusUpdate extends Application {
 
     public void step (double elapsedTime,Text text) {
         if(pressedEnter && !playerWon && !playerLost) {
-            deleteDeadBricks();
+            deleteDeadBricksCreatePowerUps();
             updateBallWallSpeed();
             updateBallPaddleSpeed();
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
-            lowerAllCreatedPowerUps(elapsedTime);
+            lowerPowerUps(elapsedTime);
+            updatePaddlePowerUp();
 
             ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
             ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
@@ -247,6 +250,45 @@ public class GameStatusUpdate extends Application {
             if(myPADDLE.getHP() > 0) {
                 handleKeyInput(KeyCode.R);
             }
+        }
+    }
+
+    public void  updatePaddlePowerUp() {
+        Iterator<PowerUp> powerUpIterator = powerUpList.iterator();
+        while (powerUpIterator.hasNext()) {
+            PowerUp powerUp = powerUpIterator.next();
+            Shape intersection = Shape.intersect(myPADDLE, powerUp);
+            if (intersection.getBoundsInLocal().getWidth() != -1) {
+                powerUp.destroyPowerUp();
+
+                if(powerUp.getTypeArray()[0])
+                {
+                    PADDLE_SPEED *= 2;
+                    System.out.println("FAST PADDLE");
+                }
+                else if(powerUp.getTypeArray()[1])
+                {
+                    BALL_SPEED_X /= 2;
+                    BALL_SPEED_Y /= 2;
+                    System.out.println("SLOW BALLS");
+                }
+                else if(powerUp.getTypeArray()[2])
+                {
+                    int x_val = (int)myPADDLE.getX();
+                    int currentLives = myPADDLE.getHP();
+                    root.getChildren().remove(myPADDLE);
+                    myPADDLE = new Paddle(x_val, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
+                    root.getChildren().add(myPADDLE);
+                    System.out.println("BIG PADDLE");
+                }
+                powerUpIterator.remove();
+            }
+        }
+
+
+        for(PowerUp powerUp:powerUpList)
+        {
+
         }
     }
 
@@ -285,18 +327,15 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  lowerPowerUp(PowerUp powerUp, double elapsedTime) {
-        powerUp.setY(powerUp.getY() + POWER_UP_DESCEND_SPEED * elapsedTime);
-    }
 
-    public void  lowerAllCreatedPowerUps(double elapsedTime) {
+    public void  lowerPowerUps(double elapsedTime) {
         for(PowerUp powerUp:powerUpList)
         {
-            lowerPowerUp(powerUp,elapsedTime);
+            powerUp.setY(powerUp.getY() + POWER_UP_DESCEND_SPEED * elapsedTime);
         }
     }
 
-    public Iterator<Brick> iterator() {
+    public Iterator<Brick> brickIterator() {
         Iterator<Brick> it = new Iterator<Brick>() {
 
             private int currentIndex = 0;
@@ -319,15 +358,38 @@ public class GameStatusUpdate extends Application {
         return it;
     }
 
-    public void  deleteDeadBricks() {
+    public Iterator<PowerUp> powerUpIterator() {
+        Iterator<PowerUp> it = new Iterator<PowerUp>() {
 
-        Iterator<Brick> iterator = brickList.iterator();
-        while (iterator.hasNext()) {
-            Brick brick = iterator.next();
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return powerUpList.get(currentIndex+1) != null;
+            }
+
+            @Override
+            public PowerUp next() {
+                return powerUpList.get(currentIndex++);
+            }
+
+            @Override
+            public void remove() {
+                powerUpList.remove(currentIndex);
+            }
+        };
+        return it;
+    }
+
+    public void  deleteDeadBricksCreatePowerUps() {
+
+        Iterator<Brick> brickIterator = brickList.iterator();
+        while (brickIterator.hasNext()) {
+            Brick brick = brickIterator.next();
             if (brick.getHP() == 0) {
 
-                int chanceOfPowerUp = (int)Math.round(Math.random());
-                //int chanceOfPowerUp = 1;
+                //int chanceOfPowerUp = (int)Math.round(Math.random());
+                int chanceOfPowerUp = 1;
                 if(chanceOfPowerUp == 1)
                 {
                     int powerUpType = (int)(Math.random() * 3);
@@ -335,7 +397,7 @@ public class GameStatusUpdate extends Application {
                     powerUpList.add(powerUp);
                     root.getChildren().add(powerUp);
                 }
-                iterator.remove();
+                brickIterator.remove();
             }
         }
         if(brickList.size() == 0)
@@ -358,7 +420,7 @@ public class GameStatusUpdate extends Application {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
             if (intersection.getBoundsInLocal().getWidth() == -1) {
-                if (code == KeyCode.RIGHT && myPADDLE.getX() < width - myPADDLE.getBoundsInLocal().getWidth()) {
+                if (code == KeyCode.RIGHT && myPADDLE.getX() < width - myPADDLE.getWidth()) {
                     myPADDLE.setX(myPADDLE.getX() + PADDLE_SPEED);
                 } else if (code == KeyCode.LEFT && myPADDLE.getX() > 0) {
                     myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
