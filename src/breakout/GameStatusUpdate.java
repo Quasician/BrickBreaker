@@ -62,7 +62,7 @@ public class GameStatusUpdate extends Application {
     public static final int PADDLE_SPEED_INIT = 5;
     public int PADDLE_SPEED = PADDLE_SPEED_INIT;
     public static final int PADDLE_Y_INIT = (int)(height*.975);
-    public static final int BALL_Y_INIT = (int)(3.5* height / 5);
+    public static final int BALL_Y_INIT = (int)(4* height / 5);
     public static final int POWER_UP_DESCEND_SPEED = 100;
 
 
@@ -87,8 +87,9 @@ public class GameStatusUpdate extends Application {
     private Stage stage;
     private boolean pressedEnter;
     private int currentLevel = -1;
+    private static final int HP_INIT = 3;
+    private int currentHP = HP_INIT;
 
-    private int currentHP = 3;
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -194,22 +195,17 @@ public class GameStatusUpdate extends Application {
         updateScore(0);
         updateLivesText();
         stage.setScene(scene);
-        System.out.println("YEET ##");
     }
 
-    public void checkPlayerLoss () {
-
-        if(myPADDLE.getHP() <= 0) {
-            //System.out.println(myPADDLE.getHP());
-            playerLost = true;
-            Group endGroup = new Group();
-            Text endMessage = new Text();
-            endGroup.getChildren().add(endMessage);
-            endScene = new Scene(endGroup, width, height, BACKGROUND);
-            stage.setScene(endScene);
-            writeHUD(endMessage, "GAME OVER\nPRESS ENTER\nTO PLAY AGAIN", 50, (int)(width / 8), height / 2);
-            endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
-        }
+    public void drawLoseScreen() {
+        playerLost = true;
+        Group endGroup = new Group();
+        Text endMessage = new Text();
+        endGroup.getChildren().add(endMessage);
+        endScene = new Scene(endGroup, width, height, BACKGROUND);
+        stage.setScene(endScene);
+        writeHUD(endMessage, "GAME OVER\nPRESS ENTER\nTO PLAY AGAIN", 50, (int)(width / 8), height / 2);
+        endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
     }
 
     public void drawWinScreen () {
@@ -226,12 +222,14 @@ public class GameStatusUpdate extends Application {
 
     public void step (double elapsedTime,Text text) {
         if(pressedEnter && !playerWon && !playerLost) {
+            if(myPADDLE.getHP() <= 0) {
+                drawLoseScreen();
+            }
             deleteDeadBricksCreatePowerUps();
             updateBallWallSpeed(elapsedTime);
             updateBallPaddleSpeed();
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
-            checkPlayerLoss();
             updatePaddleX();
             lowerPowerUps(elapsedTime);
             updatePaddlePowerUp();
@@ -245,7 +243,6 @@ public class GameStatusUpdate extends Application {
     public void  updateBallWallSpeed(double elapsedTime) {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
-            //System.out.println(ball.getX());
             BALL_SPEED_X *= -1;
             ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
         }
@@ -288,14 +285,14 @@ public class GameStatusUpdate extends Application {
                 if(powerUp.getTypeArray()[0])
                 {
                     PADDLE_SPEED *= 2;
-                    //System.out.println("FAST PADDLE");
+
                 }
                 else if(powerUp.getTypeArray()[1])
                 {
                     BALL_SPEED_X *= .75;
                     BALL_SPEED_Y *= .75;
                     BALL_SPEED_TOTAL *= .75;
-                    //System.out.println("SLOW BALLS");
+
                 }
                 else if(powerUp.getTypeArray()[2])
                 {
@@ -305,7 +302,6 @@ public class GameStatusUpdate extends Application {
                     PADDLE_WIDTH *= 2;
                     myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
                     root.getChildren().add(myPADDLE);
-                    //System.out.println("BIG PADDLE");
                 }
                 powerUpIterator.remove();
             }
@@ -326,16 +322,8 @@ public class GameStatusUpdate extends Application {
                 double normalizedBallPaddleXDiff = (ballPaddleXDiff/(PADDLE_WIDTH));
                 double angle = normalizedBallPaddleXDiff * MAXBOUNCEANGLE;
 
-
-
                 BALL_SPEED_Y = (int)(-BALL_SPEED_TOTAL * Math.cos(angle));
                 BALL_SPEED_X = -1 * (int)(BALL_SPEED_TOTAL * Math.sin(angle));
-
-                //ball.setX(ball.getX() + 2* BALL_SPEED_X * elapsedTime);
-                //ball.setY(ball.getY() + 2* -BALL_SPEED_Y * elapsedTime);
-                System.out.println("ANGLE: " +angle);
-                System.out.println("X: " + BALL_SPEED_X);
-                System.out.println("Y: " +BALL_SPEED_Y);
             }
 
         }
@@ -471,8 +459,7 @@ public class GameStatusUpdate extends Application {
             //System.out.println("YEET");
             currentLevel = 1;
             score = 0;
-            playerLost = false;
-            playerWon = false;
+            currentHP = HP_INIT;
             createLevel();
         }
 
@@ -481,13 +468,11 @@ public class GameStatusUpdate extends Application {
             if((desiredLevel)>=0 && (desiredLevel)<=levels.length)
             {
                 currentLevel = desiredLevel;
-                score = 0;
                 createLevel();
             }
             else if(desiredLevel >levels.length)
             {
                 currentLevel = levels.length;
-                score = 0;
                 createLevel();
             }
         }

@@ -74,14 +74,10 @@ public class Level {
         // create one top level collection to organize the things in the scene
         for (int i = 0; i<levels[levelNumber].getRingArray().length;i++)
         {
-            //BorderPane rotatePane = new BorderPane();
-            //rotatePane.setPrefSize(width, height*.7);
             Group rotateGroup1 = new Group();
 
             ArrayList <Brick> ringList = createBricksInCircles (levels[levelNumber].getRingArray()[i]);
             rotateGroup1.getChildren().addAll(ringList);
-            //rotatePane.setCenter(rotateGroup1);
-            //root.getChildren().add(rotatePane);
             brickList.addAll(ringList);
 
             RotateTransition grouprt1 = new RotateTransition(Duration.millis(3000), rotateGroup1);
@@ -102,53 +98,6 @@ public class Level {
         root.getChildren().add(myPADDLE);
         root.getChildren().add(scoreHUD);
         root.getChildren().add(livesHUD);
-
-//
-//
-//        BorderPane rotatePane1 = new BorderPane();
-//        BorderPane rotatePane2 = new BorderPane();
-//        rotatePane1.setPrefSize(width, height*.7);
-//        rotatePane2.setPrefSize(width, height*.7);
-//        Group rotateGroup1 = new Group();
-//        Group rotateGroup2 = new Group();
-//
-//
-//
-//        ArrayList<Brick> innerCircle = createBricksInCircles (300, 250, 4, 50, 15, 15, 2);
-//        rotateGroup1.getChildren().addAll(innerCircle);
-//        rotatePane1.setCenter(rotateGroup1);
-//
-//
-//        ArrayList<Brick> outerCircle = createBricksInCircles (300, 250, 16, 150, 15, 15, 3);
-//        rotateGroup2.getChildren().addAll(outerCircle);
-//        rotatePane2.setCenter(rotateGroup2);
-//
-//        brickList.addAll(outerCircle);
-//        brickList.addAll(innerCircle);
-//
-//        RotateTransition grouprt1 = new RotateTransition(Duration.millis(3000), rotateGroup1);
-//        grouprt1.setInterpolator(Interpolator.LINEAR);
-//        grouprt1.setByAngle(360);
-//        grouprt1.setCycleCount(Animation.INDEFINITE);
-//        grouprt1.setAutoReverse(false);
-//        grouprt1.play();
-//
-//        RotateTransition grouprt2 = new RotateTransition(Duration.millis(3000), rotateGroup2);
-//        grouprt2.setInterpolator(Interpolator.LINEAR);
-//        grouprt2.setByAngle(360);
-//        grouprt2.setCycleCount(Animation.INDEFINITE);
-//        grouprt2.setRate(-.3);
-//        grouprt2.play();
-//
-//
-//        root.getChildren().add(ball);
-//        root.getChildren().add(myPADDLE);
-//        root.getChildren().add(rotatePane1);
-//        root.getChildren().add(rotatePane2);
-//        root.getChildren().add(scoreHUD);
-//        root.getChildren().add(livesHUD);
-        //root.getChildren().add(rect);
-        // create a place to see the shapes
 
         return;
     }
