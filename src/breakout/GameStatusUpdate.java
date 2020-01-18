@@ -42,7 +42,8 @@ public class GameStatusUpdate extends Application {
     public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
     public int BALL_SPEED_Y = BALL_SPEED_Y_INIT;  //160
     public static int BALL_SPEED_TOTAL = 200;
-    public static final int PADDLE_WIDTH = 75;
+    public static final int PADDLE_WIDTH_INIT = 75;
+    public int PADDLE_WIDTH = PADDLE_WIDTH_INIT;
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED_INIT = 5;
     public int PADDLE_SPEED = PADDLE_SPEED_INIT;
@@ -168,6 +169,7 @@ public class GameStatusUpdate extends Application {
         playerWon = false;
         BALL_SPEED_X = BALL_SPEED_X_INIT;
         BALL_SPEED_Y = BALL_SPEED_Y_INIT;
+        PADDLE_WIDTH = PADDLE_WIDTH_INIT;
         PADDLE_SPEED = PADDLE_SPEED_INIT;
         brickList = new ArrayList <Brick>();
         powerUpList = new ArrayList <PowerUp>();
@@ -264,31 +266,26 @@ public class GameStatusUpdate extends Application {
                 if(powerUp.getTypeArray()[0])
                 {
                     PADDLE_SPEED *= 2;
-                    System.out.println("FAST PADDLE");
+                    //System.out.println("FAST PADDLE");
                 }
                 else if(powerUp.getTypeArray()[1])
                 {
                     BALL_SPEED_X /= 2;
                     BALL_SPEED_Y /= 2;
-                    System.out.println("SLOW BALLS");
+                    //System.out.println("SLOW BALLS");
                 }
                 else if(powerUp.getTypeArray()[2])
                 {
                     int x_val = (int)myPADDLE.getX();
                     int currentLives = myPADDLE.getHP();
                     root.getChildren().remove(myPADDLE);
+                    PADDLE_WIDTH *= 2;
                     myPADDLE = new Paddle(x_val, 4* height / 5, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
                     root.getChildren().add(myPADDLE);
-                    System.out.println("BIG PADDLE");
+                    //System.out.println("BIG PADDLE");
                 }
                 powerUpIterator.remove();
             }
-        }
-
-
-        for(PowerUp powerUp:powerUpList)
-        {
-
         }
     }
 
@@ -388,8 +385,7 @@ public class GameStatusUpdate extends Application {
             Brick brick = brickIterator.next();
             if (brick.getHP() == 0) {
 
-                //int chanceOfPowerUp = (int)Math.round(Math.random());
-                int chanceOfPowerUp = 1;
+                int chanceOfPowerUp = (int)Math.round(Math.random());
                 if(chanceOfPowerUp == 1)
                 {
                     int powerUpType = (int)(Math.random() * 3);
@@ -420,7 +416,7 @@ public class GameStatusUpdate extends Application {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
             if (intersection.getBoundsInLocal().getWidth() == -1) {
-                if (code == KeyCode.RIGHT && myPADDLE.getX() < width - myPADDLE.getWidth()) {
+                if (code == KeyCode.RIGHT && myPADDLE.getX() + PADDLE_WIDTH< width ) {
                     myPADDLE.setX(myPADDLE.getX() + PADDLE_SPEED);
                 } else if (code == KeyCode.LEFT && myPADDLE.getX() > 0) {
                     myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
