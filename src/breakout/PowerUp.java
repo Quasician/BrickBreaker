@@ -13,7 +13,6 @@ public class PowerUp extends GameObject{
         super(x_init, y_init, POWERUP_WIDTH, POWERUP_WIDTH);
         this.x_init = x_init;
         this.y_init = y_init;
-        hp = 1;
         int powerUpType = type % 3;
         initType(powerUpType);
     }
@@ -38,11 +37,6 @@ public class PowerUp extends GameObject{
     public void destroyPowerUp()
     {
         super.setFill(Color.TRANSPARENT);
-    }
-
-    public void decreaseHP()
-    {
-        hp--;
     }
 
     public boolean[] getTypeArray()

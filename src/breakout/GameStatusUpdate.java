@@ -46,6 +46,9 @@ public class GameStatusUpdate extends Application {
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED = 5;
 
+    public static final int POWER_UP_DESCEND_SPEED = 100;
+
+
     public static final String TITLE = "Thomas's Breakout Game";
     public static final int SIZE = 600;
     public static final int FRAMES_PER_SECOND = 60;
@@ -217,6 +220,7 @@ public class GameStatusUpdate extends Application {
             updateBrickBallSpeed(elapsedTime);
             updateOnLostBall();
             checkPlayerLoss();
+            lowerAllCreatedPowerUps(elapsedTime);
 
             ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
             ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
@@ -281,6 +285,16 @@ public class GameStatusUpdate extends Application {
         }
     }
 
+    public void  lowerPowerUp(PowerUp powerUp, double elapsedTime) {
+        powerUp.setY(powerUp.getY() + POWER_UP_DESCEND_SPEED * elapsedTime);
+    }
+
+    public void  lowerAllCreatedPowerUps(double elapsedTime) {
+        for(PowerUp powerUp:powerUpList)
+        {
+            lowerPowerUp(powerUp,elapsedTime);
+        }
+    }
 
     public Iterator<Brick> iterator() {
         Iterator<Brick> it = new Iterator<Brick>() {
@@ -312,8 +326,8 @@ public class GameStatusUpdate extends Application {
             Brick brick = iterator.next();
             if (brick.getHP() == 0) {
 
-                //int chanceOfPowerUp = (int)Math.round(Math.random());
-                int chanceOfPowerUp = 1;
+                int chanceOfPowerUp = (int)Math.round(Math.random());
+                //int chanceOfPowerUp = 1;
                 if(chanceOfPowerUp == 1)
                 {
                     int powerUpType = (int)(Math.random() * 3);
@@ -337,6 +351,8 @@ public class GameStatusUpdate extends Application {
         }
 
     }
+
+
 
     public void handleKeyInput(KeyCode code) {
         if (code == KeyCode.LEFT || code == KeyCode.RIGHT) {
