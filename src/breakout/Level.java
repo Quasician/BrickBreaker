@@ -17,38 +17,15 @@ public class Level {
     protected Paint background;
     protected ArrayList <Brick> brickList;
 
-    private Text scoreHUD;
-    private Text livesHUD;
-    private int levelNumber;
-
-    private Paddle myPADDLE;
-    private Ball ball;
     private Group root;
     private levelInfo[] levels;
 
-    public Level(int levelNumber, int width, int height, Paint background, Group root, Ball ball, Paddle paddle, Text scoreHUD, Text livesHUD, ArrayList <Brick> brickList, levelInfo[] levels) {
-        this.levelNumber = levelNumber;
-        this.width = width;
-        this.height = height;
-        this.background = background;
-        this.root = root;
-        this.ball = ball;
-        this.myPADDLE = paddle;
-        this.scoreHUD = scoreHUD;
-        this.brickList = brickList;
-        this.livesHUD = livesHUD;
-        this.levels = levels;
-        setUpLevel(levelNumber-1);
-    }
-
-
-    public void setUpLevel(int levelNumber) {
-        // create one top level collection to organize the things in the scene
-        for (int i = 0; i<levels[levelNumber].getRingArray().length;i++)
+    public Level(int levelNumber, Group root, ArrayList <Brick> brickList, levelInfo[] levels) {
+        for (int i = 0; i<levels[levelNumber-1].getRingArray().length;i++)
         {
             Group rotateGroup1 = new Group();
 
-            ArrayList <Brick> ringList = createBricksInCircles (levels[levelNumber].getRingArray()[i]);
+            ArrayList <Brick> ringList = createBricksInCircles (levels[levelNumber-1].getRingArray()[i]);
             rotateGroup1.getChildren().addAll(ringList);
             brickList.addAll(ringList);
 
@@ -59,14 +36,12 @@ public class Level {
             grouprt1.setAutoReverse(false);
             grouprt1.play();
             grouprt1.setRate(.3);
-            if(levels[levelNumber].getRingArray()[i].getCCW() == 1)
+            if(levels[levelNumber-1].getRingArray()[i].getCCW() == 1)
             {
                 grouprt1.setRate(-.3);
             }
             root.getChildren().add(rotateGroup1);
         }
-
-        return;
     }
 
 

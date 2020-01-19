@@ -4,26 +4,16 @@ import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -34,22 +24,25 @@ import java.util.Scanner;
  *
  * @author Robert C. Duvall
  */
+
+
 public class GameStatusUpdate extends Application {
     public levelInfo[] levels;
 
     private boolean playerLost;
     private boolean playerWon;
     private int score;
-    private static int width = 600;
-    private static int height = 600;
-    private Ball ball;
-    private Paddle myPADDLE;
-    private Text scoreHUD;
-    private Text livesHUD;
+    private final static int width = 600;
+    private final static int height = 600;
+
+    public Ball ball;
+    public  Paddle myPADDLE;
+    public Text scoreHUD;
+    public Text livesHUD;
 
 
 
-    public final static double MAXBOUNCEANGLE = Math.PI*.7;
+    public final static double MAX_BOUNCE_ANGLE = Math.PI*.7;
     public final static int BALL_SPEED_X_INIT = 0; //120
     public final static int BALL_SPEED_Y_INIT = 200;  //160
     public int BALL_SPEED_X = BALL_SPEED_X_INIT; //120
@@ -85,11 +78,10 @@ public class GameStatusUpdate extends Application {
     public static final Paint PADDLE_COLOR = Color.PLUM;
     private ArrayList<Brick> brickList;
     private ArrayList<PowerUp> powerUpList;
-    private Scene startScene;
-    private Scene endScene;
-    private Scene winScene;
+
     private Stage stage;
     private boolean pressedEnter;
+    private boolean immortality = false;
     private int currentLevel = -1;
     private static final int HP_INIT = 3;
     private int currentHP = HP_INIT;
@@ -160,7 +152,7 @@ public class GameStatusUpdate extends Application {
         String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
         Text startMessage = new Text();
         startGroup.getChildren().add(startMessage);
-        startScene = new Scene(startGroup, width, height, BACKGROUND);
+        Scene startScene = new Scene(startGroup, width, height, BACKGROUND);
 
         stage.setScene(startScene);
         stage.setTitle(TITLE);
@@ -192,7 +184,7 @@ public class GameStatusUpdate extends Application {
         root.getChildren().add(scoreHUD);
         root.getChildren().add(livesHUD);
 
-        Level level = new Level(currentLevel, SIZE, SIZE, BACKGROUND, root, ball, myPADDLE, scoreHUD, livesHUD, brickList, levels);
+        Level level = new Level(currentLevel, root, brickList, levels);
         Scene scene = new Scene(root, width, height, BACKGROUND);
         scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
         updateScore(0);
@@ -205,7 +197,7 @@ public class GameStatusUpdate extends Application {
         Group endGroup = new Group();
         Text endMessage = new Text();
         endGroup.getChildren().add(endMessage);
-        endScene = new Scene(endGroup, width, height, BACKGROUND);
+        Scene endScene = new Scene(endGroup, width, height, BACKGROUND);
         stage.setScene(endScene);
         writeHUD(endMessage, "GAME OVER\nPRESS ENTER\nTO PLAY AGAIN", 50, (int)(width / 8), height / 2);
         endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
@@ -216,7 +208,7 @@ public class GameStatusUpdate extends Application {
         Group winGroup = new Group();
         Text winMessage = new Text();
         winGroup.getChildren().add(winMessage);
-        winScene = new Scene(winGroup, width, height, BACKGROUND);
+        Scene winScene = new Scene(winGroup, width, height, BACKGROUND);
         stage.setScene(winScene);
         writeHUD(winMessage, "YOU WIN\nYOUR SCORE:\n" + score, 50, (int)(width / 8), height / 2);
         winScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
@@ -240,21 +232,19 @@ public class GameStatusUpdate extends Application {
             ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
             ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
         }
-
     }
 
     public void  updateBallWallSpeed(double elapsedTime) {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width)
         {
             BALL_SPEED_X *= -1;
-            ball.setX(ball.getX() + BALL_SPEED_X * elapsedTime);
+            ball.setX(ball.getX() + 3* BALL_SPEED_X * elapsedTime);
         }
-        if(ball.getY()<=0)
+        if(ball.getY()<=0 || (immortality && ball.getY() + ball.getWidth()>= width))
         {
             BALL_SPEED_Y *= -1;
-            ball.setY(ball.getY() + BALL_SPEED_Y * elapsedTime);
+            ball.setY(ball.getY() + 3* BALL_SPEED_Y * elapsedTime);
         }
-
     }
 
     public void  updateOnLostBall() {
@@ -323,12 +313,11 @@ public class GameStatusUpdate extends Application {
                 double ballPaddleXDiff = (myPADDLE.getX()+PADDLE_WIDTH/2) - (ball.getX() + ball.getWidth()/2);
 
                 double normalizedBallPaddleXDiff = (ballPaddleXDiff/(PADDLE_WIDTH));
-                double angle = normalizedBallPaddleXDiff * MAXBOUNCEANGLE;
+                double angle = normalizedBallPaddleXDiff * MAX_BOUNCE_ANGLE;
 
                 BALL_SPEED_Y = (int)(-BALL_SPEED_TOTAL * Math.cos(angle));
                 BALL_SPEED_X = -1 * (int)(BALL_SPEED_TOTAL * Math.sin(angle));
             }
-
         }
     }
 
@@ -438,7 +427,6 @@ public class GameStatusUpdate extends Application {
     }
 
 
-
     public void handleKeyInput(KeyCode code) {
         if ((code == KeyCode.LEFT || code == KeyCode.RIGHT) && pressedEnter) {
             Shape intersection = Shape.intersect(myPADDLE, ball);
@@ -488,10 +476,15 @@ public class GameStatusUpdate extends Application {
             myPADDLE.setX(PADDLE_X_INIT);
             myPADDLE.setY(PADDLE_Y_INIT);
         }
+
         if (code == KeyCode.L && pressedEnter) {
             myPADDLE.increaseHP();
             currentHP++;
             updateLivesText();
+        }
+
+        if (code == KeyCode.C && pressedEnter) {
+            immortality = true;
         }
     }
 
