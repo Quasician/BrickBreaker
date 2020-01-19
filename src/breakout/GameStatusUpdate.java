@@ -149,7 +149,19 @@ public class GameStatusUpdate extends Application {
         playerWon = false;
         score = 0;
         Group startGroup = new Group();
-        String message = "Press Enter To Start\n Second row Test\n Third row Test\n";
+        String message = "                                  WELCOME TO MY BREAKOUT GAME! \n\n" +
+                "    There are 3 levels in my game. The left and right arrow keys move the paddle left \n " +
+                "and right. You must hit and destroy all the bricks to beat a level. Each brick's color \n" +
+                "designates how much hit points it has left. A green brick has 1 hp, a grey brick is 2 hp, \n" +
+                "a black brick is 3 hp. Each game you play starts with 3 lives. Everytime the ball hits \n " +
+                "the ground, you lose a life. When you lose all your lives, you lose. If you hit all bricks\n" +
+                "throughout all three levels without losing all of your lives you win. \n\n\n" +
+                "Cheat keys:\n" +
+                "R: resets ball and paddle to original locations\n" +
+                "L: adds a life\n" +
+                "1-3: transports player to that level (4-9 will take the player to level 3)\n" +
+                "C: activates immortality (ball will bounce off the ground)\n\n\n\n" +
+                "Press Enter To Start\n";
         Text startMessage = new Text();
         startGroup.getChildren().add(startMessage);
         Scene startScene = new Scene(startGroup, width, height, BACKGROUND);
@@ -158,7 +170,7 @@ public class GameStatusUpdate extends Application {
         stage.setTitle(TITLE);
         stage.show();
 
-        writeHUD(startMessage, message, 20, (int)(width / 3.8), height / 2);
+        writeHUD(startMessage, message, 15, (int)(width / 30), height / 20);
         startScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     }
 
