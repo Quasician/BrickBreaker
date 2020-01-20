@@ -21,12 +21,10 @@ public class Paddle extends GameObject{
         hp++;
     }
 
-
     public void increasePaddleSize()
     {
         width *=2;
     }
-
 
     public int getHP()
     {

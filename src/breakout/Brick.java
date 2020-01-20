@@ -17,8 +17,7 @@ public class Brick extends GameObject {
         updateColor();
     }
 
-    public void decreaseHP()
-    {
+    public void decreaseHP(){
         hp--;
         updateColor();
     }
@@ -28,28 +27,22 @@ public class Brick extends GameObject {
         return hp;
     }
 
-    public void updateColor()
-    {
-        if(hp == 3)
-        {
+    public void updateColor() {
+        if(hp == 3) {
             setColor(Color.BLACK);
         }
-        else if(hp == 2)
-        {
+        else if(hp == 2) {
             setColor(Color.SILVER);
         }
-        else if(hp == 1)
-        {
+        else if(hp == 1) {
             setColor(Color.GREEN);
         }
-        else if(hp == 0)
-        {
+        else if(hp == 0) {
             setColor(Color.TRANSPARENT);
         }
     }
 
-    public void setColor(Paint color)
-    {
+    public void setColor(Paint color) {
         this.color = color;
         super.setFill(color);
     }

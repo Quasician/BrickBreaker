@@ -21,10 +21,8 @@ public class Level {
     private levelInfo[] levels;
 
     public Level(int levelNumber, Group root, ArrayList <Brick> brickList, levelInfo[] levels) {
-        for (int i = 0; i<levels[levelNumber-1].getRingArray().length;i++)
-        {
+        for (int i = 0; i<levels[levelNumber-1].getRingArray().length;i++) {
             Group rotateGroup1 = new Group();
-
             ArrayList <Brick> ringList = createBricksInCircles (levels[levelNumber-1].getRingArray()[i]);
             rotateGroup1.getChildren().addAll(ringList);
             brickList.addAll(ringList);
@@ -36,8 +34,7 @@ public class Level {
             grouprt1.setAutoReverse(false);
             grouprt1.play();
             grouprt1.setRate(.3);
-            if(levels[levelNumber-1].getRingArray()[i].getCCW() == 1)
-            {
+            if(levels[levelNumber-1].getRingArray()[i].getCCW() == 1) {
                 grouprt1.setRate(-.3);
             }
             root.getChildren().add(rotateGroup1);
@@ -45,11 +42,9 @@ public class Level {
     }
 
 
-    public ArrayList createBricksInCircles (ringInfo ring)
-    {
+    public ArrayList createBricksInCircles (ringInfo ring) {
         ArrayList<Brick> list = new ArrayList<Brick>();
-        for( int i = 0; i<ring.getCircleNumber(); i++)
-        {
+        for( int i = 0; i<ring.getCircleNumber(); i++) {
             int x = (int)(ring.getX() + ring.getRadiusOfPath() * Math.cos(2 * Math.PI * i / ring.getCircleNumber()));
             int y = (int)(ring.getY() + ring.getRadiusOfPath() * Math.sin(2 * Math.PI * i / ring.getCircleNumber()));
             //System.out.println(x + " " + y + " " + radiusBall);s
@@ -59,5 +54,4 @@ public class Level {
         }
         return list;
     }
-
 }
