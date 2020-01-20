@@ -14,15 +14,21 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 
+/**
+ * @author Thomas Chemmanoor
+ * The purpose of the GameStatusUpdate class is essentially being the supervisor of the entire game.
+ * This class creates the game and updates GameObject object values as the game progresses.
+ * The only situation that the class would fail would be if someting happens in the game that GameStatusUpdate class has not accounted for.
+ * This class depends on the package breakout and the class application.
+ * To use this class simply initialize the state of your desired game in the start method and call the launch method within the main method.
+ */
 public class GameStatusUpdate extends Application {
 
-    private levelInfo[] levels;
+    private LevelInfo[] levels;
 
     private boolean playerLost;
     private boolean playerWon;
@@ -89,10 +95,17 @@ public class GameStatusUpdate extends Application {
             "1-3: transports player to that level (4-9 will take the player to level 3)\n" +
             "C: toggles immortality (ball will bounce off the ground)\n\n\n\n" + "Press Enter To Start\n";
 
-    /**
-     * Initialize what will be displayed and how it will be updated.
-     */
 
+    /**
+     * The start method is run by the launch method within the main method at the botom of this file.
+     * This method sets a global variable to equal the stage that was passed in and it calls the functions needed to create the base game.
+     * Specifically it calls methods that initialize the levels from the text files and create the splash screen.
+     * It finally starts the gameloop through the use of the Timeline animation and continuously calling the step function.
+     *
+     * The only assumption being made here is that this method is inside a class that extends application.
+     * @param stage
+     * @throws IOException
+     */
     @Override
     public void start (Stage stage) throws IOException {
         this.stage = stage;
@@ -112,9 +125,14 @@ public class GameStatusUpdate extends Application {
         animation.play();
     }
 
-    public void initScenes() throws FileNotFoundException {
+    /**
+     * initScenes goes through all text files within the resource folder and adds each level's info into a levelInfo (an object that contains all pertinent level elements) array
+     * It does this so that the game can create levels simply by loading up a levelInfo object into the correct function.
+     * @throws FileNotFoundException
+     */
+    private void initScenes() throws FileNotFoundException {
         int fileNumber = new File("./resources/").listFiles().length;
-        levels = new levelInfo[fileNumber];
+        levels = new LevelInfo[fileNumber];
 
         File directory = new File("./resources/");
         File[] files = directory.listFiles();
@@ -127,22 +145,34 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public levelInfo getLevelFromText(File[] files, int file) throws FileNotFoundException {
+    /**
+     * getlevelFromText loads the info from the level text files into ringInfo (object that contains all of a ring of brick's info) and levelInfo objects
+     * @param files
+     * @param file
+     * @return I am returning a levelInfo object that contains all of a level's pertinent information
+     * @throws FileNotFoundException
+     */
+    private LevelInfo getLevelFromText(File[] files, int file) throws FileNotFoundException {
         Scanner sc = new Scanner(files[file]);
         int firstNumInLine = sc.nextInt();
         while (firstNumInLine == 0) {
             sc.nextLine();
             firstNumInLine = sc.nextInt();
         }
-        levelInfo levelText = new levelInfo(firstNumInLine);
+        LevelInfo levelText = new LevelInfo(firstNumInLine);
         for(int i = 0; i< levelText.getRingNumber();i++) {
-            ringInfo ringText = new ringInfo(sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(), sc.nextInt());
+            RingInfo ringText = new RingInfo(sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(), sc.nextInt());
             levelText.getRingArray()[i] = ringText;
         }
         return levelText;
     }
 
-    public void createLevel() {
+    /**
+     * createLevel adds the ball, paddle, and both the score and lives counter to the level.
+     * It also calls the methods that actually load up the level from the levelInfo array.
+     * Finally it also sets the event handler to work for this scene when the user presses a key.
+     */
+    private void createLevel() {
         initLevel();
 
         root.getChildren().add(ball);
@@ -158,7 +188,11 @@ public class GameStatusUpdate extends Application {
         stage.setScene(scene);
     }
 
-    public void initLevel() {
+    /**
+     * initLevel sets all values to their initial values
+     * Every time a level is created this method is called.
+     */
+    private void initLevel() {
         playerLost = false;
         playerWon = false;
         BALL_SPEED_X = BALL_SPEED_X_INIT;
@@ -176,7 +210,11 @@ public class GameStatusUpdate extends Application {
         root = new Group();
     }
 
-    public void showStartScreen() {
+    /**
+     * showStartScreen creates and shows the player the splash screen.
+     * It also sets the event handler to work for this scene when the user presses a key.
+     */
+    private void showStartScreen() {
         pressedEnter = false;
         playerLost = false;
         playerWon = false;
@@ -193,7 +231,11 @@ public class GameStatusUpdate extends Application {
         startScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     }
 
-    public void drawLoseScreen() {
+    /**
+     * drawLoseScreen creates and shows the player the lose screen.
+     * It also sets the event handler to work for this scene when the user presses a key.
+     */
+    private void drawLoseScreen() {
         playerLost = true;
         Group endGroup = new Group();
         Text endMessage = new Text();
@@ -204,7 +246,12 @@ public class GameStatusUpdate extends Application {
         endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
     }
 
-    public void drawWinScreen() throws IOException {
+    /**
+     * drawWinScreen creates and shows the player the win screen.
+     * Shows the player their score and the highest score in the game's history.
+     * It also sets the event handler to work for this scene when the user presses a key.
+     */
+    private void drawWinScreen() throws IOException {
         playerWon = true;
         Group winGroup = new Group();
         Text winMessage = new Text();
@@ -216,7 +263,11 @@ public class GameStatusUpdate extends Application {
         winScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
     }
 
-    public void updateMaxScore() throws IOException {
+    /**
+     * updateMaxScore changes the maxScore in the game and the maxScore file within the game's module if the player beats the high score.
+     * @throws IOException
+     */
+    private void updateMaxScore() throws IOException {
         File scoreFile = new File("./maxScore/maxScore.txt");
         Scanner sc = new Scanner(scoreFile);
         maxScore = sc.nextInt();
@@ -228,7 +279,14 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void step (double elapsedTime,Text text) throws IOException  {
+    /**
+     * step updates the speed of the ball on collisions with bricks, walls, the paddle, and the ground.
+     * step also deletes dead bricks, updates speedy paddle x coordinates, lowers the power ups, updates the game when the paddle gets a power up, and checks to see if the player has finished the level.
+     * @param elapsedTime
+     * @param text
+     * @throws IOException
+     */
+    private void step (double elapsedTime,Text text) throws IOException  {
         if(pressedEnter && !playerWon && !playerLost) {
             if(myPADDLE.getHP() <= 0) {
                 drawLoseScreen();
@@ -248,7 +306,11 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateBallWallSpeed(double elapsedTime) {
+    /**
+     * updateBallWallSpeed updates the ball's speed in both directions when it hits a wall.
+     * @param elapsedTime
+     */
+    private void  updateBallWallSpeed(double elapsedTime) {
         if(ball.getX()<=0  || ball.getX() + ball.getWidth()>= width) {
             BALL_SPEED_X *= -1;
             ball.setX(ball.getX() + 3* BALL_SPEED_X * elapsedTime);
@@ -259,7 +321,10 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateOnLostBall() {
+    /**
+     * updateOnLostBall updates the ball's speed in both directions when it hits the ground.
+     */
+    private void  updateOnLostBall() {
         if(ball.getY()>=height) {
             myPADDLE.decreaseHP();
             currentHP--;
@@ -270,7 +335,10 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updatePaddleX() {
+    /**
+     * updatePaddleX updates the paddle's x coordinate if it goes into restricted areas.
+     */
+    private void  updatePaddleX() {
         if(myPADDLE.getX()<0) {
             myPADDLE.setX(0);
         }
@@ -279,7 +347,12 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updatePaddlePowerUp() {
+    /**
+     * updatePaddlePowerUp destroys power up if paddle touches a power up.
+     * If destroyed, the power up affects the game by calling the updateGameOnPowerUpActivation method
+     * Finally, it is removed from the power up arraylist.
+     */
+    private void  updatePaddlePowerUp() {
         Iterator<PowerUp> powerUpIterator = powerUpList.iterator();
         while (powerUpIterator.hasNext()) {
             PowerUp powerUp = powerUpIterator.next();
@@ -292,7 +365,12 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateGameOnPowerUpActivation(PowerUp powerUp) {
+    /**
+     * updateGameOnPowerUpActivation updates game state when power up is collected.
+     * Either increases the paddle speed, slows down the speed of the ball, or makes the paddle bigger
+     * @param powerUp
+     */
+    private void  updateGameOnPowerUpActivation(PowerUp powerUp) {
         if(powerUp.getTypeArray()[0]) {
             PADDLE_SPEED *= 2;
         }
@@ -312,7 +390,10 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateBallPaddleSpeed() {
+    /**
+     * updateBallPaddleSpeed updates the ball's speed in both directions when it hits the paddle.
+     */
+    private void  updateBallPaddleSpeed() {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
             if(ball.getY() < myPADDLE.getY()){
@@ -328,7 +409,11 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void  updateBrickBallSpeed(double elapsedTime) {
+    /**
+     * updateBrickBallSpeed updates the ball's speed in both directions when it hits a brick.
+     * @param elapsedTime
+     */
+    private void  updateBrickBallSpeed(double elapsedTime) {
         for (Brick i : brickList) {
             Shape intersection = Shape.intersect(i, ball);
             if (intersection.getBoundsInLocal().getWidth() != -1 && i.getHP() > 0) {
@@ -346,14 +431,20 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-
-    public void  lowerPowerUps(double elapsedTime) {
+    /**
+     * lowerPowerUps updates a power up's y coordinate when it exists (makes it fall down).
+     * @param elapsedTime
+     */
+    private void  lowerPowerUps(double elapsedTime) {
         for(PowerUp powerUp:powerUpList) {
             powerUp.setY(powerUp.getY() + POWER_UP_DESCEND_SPEED * elapsedTime);
         }
     }
 
-    public Iterator<Brick> brickIterator() {
+    /** returns a brickIterator - was needed since I am removing bricks from a list while I am traversing that same list.
+     * @return brickIterator
+     */
+    private Iterator<Brick> brickIterator() {
         Iterator<Brick> it = new Iterator<Brick>() {
             private int currentIndex = 0;
             @Override
@@ -372,7 +463,10 @@ public class GameStatusUpdate extends Application {
         return it;
     }
 
-    public Iterator<PowerUp> powerUpIterator() {
+    /** returns a powerUpIterator - was needed since I am removing power ups from a list while I am traversing that same list.
+     * @return powerUpIterator
+     */
+    private Iterator<PowerUp> powerUpIterator() {
         Iterator<PowerUp> it = new Iterator<PowerUp>() {
             private int currentIndex = 0;
             @Override
@@ -391,7 +485,10 @@ public class GameStatusUpdate extends Application {
         return it;
     }
 
-    public void  deleteDeadBricksCreatePowerUps() {
+    /**
+     * deleteDeadBricksCreatePowerUps removes dead bricks from the game and creates power ups
+     */
+    private void  deleteDeadBricksCreatePowerUps() {
         Iterator<Brick> brickIterator = brickList.iterator();
         while (brickIterator.hasNext()) {
             Brick brick = brickIterator.next();
@@ -408,7 +505,12 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void checkLevelStatus() throws IOException {
+    /**
+     * checkLevelStatus checks to see if the player has destroyed all the bricks in the level.
+     * If they have, the method either creates the next level or it shows the win screen.
+     * @throws IOException
+     */
+    private void checkLevelStatus() throws IOException {
         if(brickList.size() == 0){
             if(currentLevel == levels.length) {
                 drawWinScreen();
@@ -420,7 +522,11 @@ public class GameStatusUpdate extends Application {
     }
 
 
-    public void handleKeyInput(KeyCode code) {
+    /**
+     * handleKeyInput is an event handler that takes care of all key press events
+     * @param code
+     */
+    private void handleKeyInput(KeyCode code) {
         handleLeftAndRightKeyPress(code);
         handleEnterKeyPress(code);
         handleDigitKeyPress(code);
@@ -488,7 +594,15 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void writeHUD(Text text, String s, int fontSize, int x, int y)
+    /**
+     * writeHUD writes a string into a text object with a font at a certain x, y coordinate
+     * @param text
+     * @param s
+     * @param fontSize
+     * @param x
+     * @param y
+     */
+    private void writeHUD(Text text, String s, int fontSize, int x, int y)
     {
         text.setFont(new Font(fontSize));
         text.setText(s);
@@ -496,17 +610,18 @@ public class GameStatusUpdate extends Application {
         text.setY(y);
     }
 
-    public void updateScore(int value) {
+
+    private void updateScore(int value) {
         score += value;
         writeHUD(scoreHUD,"Score: "+score,30,0,height/20);
     }
 
-    public void updateLivesText() {
+    private void updateLivesText() {
         writeHUD(livesHUD,"Lives: "+ myPADDLE.getHP(),30,0,height/10);
     }
 
     /**
-     * Start the program.
+     * Starts the program.
      */
     public static void main (String[] args) {
         launch(args);
