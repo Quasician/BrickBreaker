@@ -41,7 +41,7 @@ Cheat keys:
     
     1-9 takes player to that corresponding level
     
-    C key prevents the ball from being able to leave the map from the bottom. Essentially Immortality.
+    C key (toggle) prevents the ball from being able to leave the map from the bottom. Essentially Immortality.
 
 
 Known Bugs:
