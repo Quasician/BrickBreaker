@@ -64,7 +64,6 @@ public class GameStatusUpdate extends Application {
 
 
     public static final String TITLE = "Thomas's Breakout Game";
-    public static final int SIZE = 600;
     public static final int FRAMES_PER_SECOND = 60;
     public static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     public static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
@@ -85,7 +84,17 @@ public class GameStatusUpdate extends Application {
     private int currentLevel = -1;
     private static final int HP_INIT = 3;
     private int currentHP = HP_INIT;
-
+    private String splashScreenMessage = "                                  WELCOME TO MY BREAKOUT GAME! \n\n" +
+            "    There are 3 levels in my game. The left and right arrow keys move the paddle left \n " +
+            "and right. You must hit and destroy all the bricks to beat a level. Each brick's color \n" +
+            "designates how much hit points it has left. A green brick has 1 hp, a grey brick is 2 hp, \n" +
+            "a black brick is 3 hp. Each game you play starts with 3 lives. Everytime the ball hits \n " +
+            "the ground, you lose a life. When you lose all your lives, you lose. If you hit all bricks\n" +
+            "throughout all three levels without losing all of your lives you win. \n\n\n" +
+            "Power Ups:\nBlue: Increases Paddle Size \nYellow: Increases Paddle speed\nRed: Slows down ball speed\n\n\n" +
+            "Cheat keys:\n" + "R: resets ball and paddle to original locations\n" + "L: adds a life\n" +
+            "1-3: transports player to that level (4-9 will take the player to level 3)\n" +
+            "C: toggles immortality (ball will bounce off the ground)\n\n\n\n" + "Press Enter To Start\n";
 
     /**
      * Initialize what will be displayed and how it will be updated.
@@ -97,55 +106,60 @@ public class GameStatusUpdate extends Application {
         initScenes();
         showStartScreen();
 
-        // attach "game loop" to timeline to play it (basically just calling step() method repeatedly forever)
         KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY,scoreHUD));
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
         animation.play();
-    }// attach scene to the stage and display it
+    }
 
     public void initScenes() throws FileNotFoundException {
         int fileNumber = new File("./resources/").listFiles().length;
-        //System.out.println(fileNumber);
         levels = new levelInfo[fileNumber];
 
         File directory = new File("./resources/");
         File[] files = directory.listFiles();
         if (files != null) {
             for (int x = 0; x <files.length; x++) {
-                // Do something with child
-                Scanner sc = new Scanner(files[x]);
-                int firstNumInLine = sc.nextInt();
-                while (firstNumInLine == 0) {
-                    sc.nextLine();
-                    firstNumInLine = sc.nextInt();
-                    //System.out.println("Found Comment");
-                }
-                levelInfo levelText = new levelInfo(firstNumInLine);
-                for(int i = 0; i< levelText.getRingNumber();i++)
-                {
-                    int x_init = sc.nextInt();
-                    int y_init = sc.nextInt();
-                    int circleNumber = sc.nextInt();
-                    int radiusOfPath = sc.nextInt();
-                    int brickWidth = sc.nextInt();
-                    int brickHeight = sc.nextInt();
-                    int hp = sc.nextInt();
-                    int ccw = sc.nextInt();
-                    ringInfo ringText = new ringInfo(x_init,y_init,circleNumber,radiusOfPath,brickWidth,brickHeight,hp, ccw);
-                    levelText.getRingArray()[i] = ringText;
-                }
-                levels[x]= levelText;
+                levels[x]= getLevelFromText(files, x);
             }
         } else {
             System.out.println("THERE ARE NO FILES IN RESOURCE TO MAKE GAME LEVELS. ADD MORE FILES IN THE CORRECT FORMAT TO PLAY THE GAME");
         }
     }
 
-
+    public levelInfo getLevelFromText(File[] files, int file) throws FileNotFoundException {
+        Scanner sc = new Scanner(files[file]);
+        int firstNumInLine = sc.nextInt();
+        while (firstNumInLine == 0) {
+            sc.nextLine();
+            firstNumInLine = sc.nextInt();
+        }
+        levelInfo levelText = new levelInfo(firstNumInLine);
+        for(int i = 0; i< levelText.getRingNumber();i++) {
+            ringInfo ringText = new ringInfo(sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(),sc.nextInt(), sc.nextInt());
+            levelText.getRingArray()[i] = ringText;
+        }
+        return levelText;
+    }
 
     public void createLevel() {
+        initLevel();
+
+        root.getChildren().add(ball);
+        root.getChildren().add(myPADDLE);
+        root.getChildren().add(scoreHUD);
+        root.getChildren().add(livesHUD);
+
+        Level level = new Level(currentLevel, root, brickList, levels);
+        Scene scene = new Scene(root, width, height, BACKGROUND);
+        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        updateScore(0);
+        updateLivesText();
+        stage.setScene(scene);
+    }
+
+    public void initLevel() {
         playerLost = false;
         playerWon = false;
         BALL_SPEED_X = BALL_SPEED_X_INIT;
@@ -161,18 +175,6 @@ public class GameStatusUpdate extends Application {
         scoreHUD = new Text();
         livesHUD = new Text();
         root = new Group();
-
-        root.getChildren().add(ball);
-        root.getChildren().add(myPADDLE);
-        root.getChildren().add(scoreHUD);
-        root.getChildren().add(livesHUD);
-
-        Level level = new Level(currentLevel, root, brickList, levels);
-        Scene scene = new Scene(root, width, height, BACKGROUND);
-        scene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        updateScore(0);
-        updateLivesText();
-        stage.setScene(scene);
     }
 
     public void showStartScreen(){
@@ -181,22 +183,14 @@ public class GameStatusUpdate extends Application {
         playerWon = false;
         score = 0;
         Group startGroup = new Group();
-        String message = "                                  WELCOME TO MY BREAKOUT GAME! \n\n" + "    There are 3 levels in my game. The left and right arrow keys move the paddle left \n " +
-                "and right. You must hit and destroy all the bricks to beat a level. Each brick's color \n" + "designates how much hit points it has left. A green brick has 1 hp, a grey brick is 2 hp, \n" +
-                "a black brick is 3 hp. Each game you play starts with 3 lives. Everytime the ball hits \n " +
-                "the ground, you lose a life. When you lose all your lives, you lose. If you hit all bricks\n" + "throughout all three levels without losing all of your lives you win. \n\n\n" +
-                "Cheat keys:\n" + "R: resets ball and paddle to original locations\n" + "L: adds a life\n" +
-                "1-3: transports player to that level (4-9 will take the player to level 3)\n" + "C: toggles immortality (ball will bounce off the ground)\n\n\n\n" +
-                "Press Enter To Start\n";
+
         Text startMessage = new Text();
         startGroup.getChildren().add(startMessage);
         Scene startScene = new Scene(startGroup, width, height, BACKGROUND);
-
         stage.setScene(startScene);
         stage.setTitle(TITLE);
         stage.show();
-
-        writeHUD(startMessage, message, 15, (int)(width / 30), height / 20);
+        writeHUD(startMessage, splashScreenMessage, 15, (int)(width / 30), height / 20);
         startScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
     }
 
@@ -282,40 +276,35 @@ public class GameStatusUpdate extends Application {
             Shape intersection = Shape.intersect(myPADDLE, powerUp);
             if (intersection.getBoundsInLocal().getWidth() != -1) {
                 powerUp.destroyPowerUp();
-
-                if(powerUp.getTypeArray()[0])
-                {
-                    PADDLE_SPEED *= 2;
-
-                }
-                else if(powerUp.getTypeArray()[1])
-                {
-                    BALL_SPEED_X *= .75;
-                    BALL_SPEED_Y *= .75;
-                    BALL_SPEED_TOTAL *= .75;
-
-                }
-                else if(powerUp.getTypeArray()[2])
-                {
-                    int x_val = (int)myPADDLE.getX();
-                    int currentLives = myPADDLE.getHP();
-                    root.getChildren().remove(myPADDLE);
-                    PADDLE_WIDTH *= 2;
-                    myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
-                    root.getChildren().add(myPADDLE);
-                }
+                updateGameOnPowerUpActivation(powerUp);
                 powerUpIterator.remove();
             }
+        }
+    }
+
+    public void  updateGameOnPowerUpActivation(PowerUp powerUp) {
+        if(powerUp.getTypeArray()[0]) {
+            PADDLE_SPEED *= 2;
+        }
+        else if(powerUp.getTypeArray()[1]) {
+            BALL_SPEED_X *= .75;
+            BALL_SPEED_Y *= .75;
+            BALL_SPEED_TOTAL *= .75;
+
+        }
+        else if(powerUp.getTypeArray()[2]) {
+            int x_val = (int)myPADDLE.getX();
+            int currentLives = myPADDLE.getHP();
+            root.getChildren().remove(myPADDLE);
+            PADDLE_WIDTH *= 2;
+            myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
+            root.getChildren().add(myPADDLE);
         }
     }
 
     public void  updateBallPaddleSpeed() {
         Shape intersection = Shape.intersect(myPADDLE, ball);
         if (intersection.getBoundsInLocal().getWidth() != -1) {
-//            if(ball.getX() < myPADDLE.getX() || ball.getX() > myPADDLE.getX()+ myPADDLE.getWidth())
-//            {
-//                BALL_SPEED_X *= -1;
-//            }
             if(ball.getY() < myPADDLE.getY()){
 
                 double ballPaddleXDiff = (myPADDLE.getX()+PADDLE_WIDTH/2) - (ball.getX() + ball.getWidth()/2);
@@ -444,13 +433,6 @@ public class GameStatusUpdate extends Application {
                 } else if (code == KeyCode.LEFT && myPADDLE.getX() > 0) {
                     myPADDLE.setX(myPADDLE.getX() - PADDLE_SPEED);
                 }
-            } else {
-
-//                if ((myPADDLE.getX() + PADDLE_WIDTH / 2) > ball.getX() + ball.getWidth()/2) {
-//                    myPADDLE.setX(myPADDLE.getX() + 3 * PADDLE_SPEED);
-//                } else if ((myPADDLE.getX() + PADDLE_WIDTH / 2) < ball.getX() + ball.getWidth()/2) {
-//                    myPADDLE.setX(myPADDLE.getX() - 3 * PADDLE_SPEED);
-//                }
             }
         }
         if (code == KeyCode.ENTER) {
