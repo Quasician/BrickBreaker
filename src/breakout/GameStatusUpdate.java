@@ -12,8 +12,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import java.io.File;
-import java.io.FileNotFoundException;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -45,6 +47,7 @@ public class GameStatusUpdate extends Application {
 
     public static final int PADDLE_WIDTH_INIT = 75;
     private int PADDLE_WIDTH = PADDLE_WIDTH_INIT;
+    private int PADDLE_WIDTH_WITH_POWERUP = PADDLE_WIDTH_INIT*2;
     public static final int PADDLE_HEIGHT = 50/3;
     public static final int PADDLE_SPEED_INIT = 5;
     private int PADDLE_SPEED = PADDLE_SPEED_INIT;
@@ -73,10 +76,11 @@ public class GameStatusUpdate extends Application {
     private int currentLevel = -1;
     private static final int HP_INIT = 3;
     private int currentHP = HP_INIT;
+    private int maxScore;
     private String splashScreenMessage = "                                  WELCOME TO MY BREAKOUT GAME! \n\n" +
             "    There are 3 levels in my game. The left and right arrow keys move the paddle left \n " +
             "and right. You must hit and destroy all the bricks to beat a level. Each brick's color \n" +
-            "designates how much hit points it has left. A green brick has 1 hp, a grey brick is 2 hp, \n" +
+            "designates how much hit points it has left. A green brick is 1 hp, a grey brick is 2 hp, \n" +
             "a black brick is 3 hp. Each game you play starts with 3 lives. Everytime the ball hits \n " +
             "the ground, you lose a life. When you lose all your lives, you lose. If you hit all bricks\n" +
             "throughout all three levels without losing all of your lives you win. \n\n\n" +
@@ -90,12 +94,18 @@ public class GameStatusUpdate extends Application {
      */
 
     @Override
-    public void start (Stage stage) throws FileNotFoundException {
+    public void start (Stage stage) throws IOException {
         this.stage = stage;
         initScenes();
         showStartScreen();
 
-        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> step(SECOND_DELAY,scoreHUD));
+        KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> {
+            try {
+                step(SECOND_DELAY,scoreHUD);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
         Timeline animation = new Timeline();
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.getKeyFrames().add(frame);
@@ -194,19 +204,31 @@ public class GameStatusUpdate extends Application {
         endScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
     }
 
-    public void drawWinScreen () {
+    public void drawWinScreen() throws IOException {
         playerWon = true;
         Group winGroup = new Group();
         Text winMessage = new Text();
         winGroup.getChildren().add(winMessage);
         Scene winScene = new Scene(winGroup, width, height, BACKGROUND);
         stage.setScene(winScene);
-        writeHUD(winMessage, "YOU WIN\nYOUR SCORE:\n" + score, 50, (int)(width / 8), height / 2);
+        updateMaxScore();
+        writeHUD(winMessage, "       YOU WIN!\n       YOUR SCORE:\n" + "       " +score + "\n     HIGHEST SCORE:\n" + "       " + maxScore, 40, (int)(width / 8), height / 2);
         winScene.setOnKeyPressed(e->handleKeyInput(e.getCode()));
-
     }
 
-    public void step (double elapsedTime,Text text) {
+    public void updateMaxScore() throws IOException {
+        File scoreFile = new File("./maxScore/maxScore.txt");
+        Scanner sc = new Scanner(scoreFile);
+        maxScore = sc.nextInt();
+        if(score>maxScore) {
+            PrintWriter clearWriter = new PrintWriter("./maxScore/maxScore.txt");
+            clearWriter.print(score+"");
+            clearWriter.close();
+            maxScore = score;
+        }
+    }
+
+    public void step (double elapsedTime,Text text) throws IOException  {
         if(pressedEnter && !playerWon && !playerLost) {
             if(myPADDLE.getHP() <= 0) {
                 drawLoseScreen();
@@ -285,7 +307,7 @@ public class GameStatusUpdate extends Application {
             int currentLives = myPADDLE.getHP();
             root.getChildren().remove(myPADDLE);
             PADDLE_WIDTH *= 2;
-            myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
+            myPADDLE = new Paddle(x_val, PADDLE_Y_INIT, PADDLE_WIDTH_WITH_POWERUP, PADDLE_HEIGHT, currentLives, PADDLE_COLOR);
             root.getChildren().add(myPADDLE);
         }
     }
@@ -386,10 +408,8 @@ public class GameStatusUpdate extends Application {
         }
     }
 
-    public void checkLevelStatus()
-    {
-        if(brickList.size() == 0)
-        {
+    public void checkLevelStatus() throws IOException {
+        if(brickList.size() == 0){
             if(currentLevel == levels.length) {
                 drawWinScreen();
             }else {
