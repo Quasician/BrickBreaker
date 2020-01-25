@@ -12,6 +12,8 @@ import java.util.ArrayList;
 /**
  * @author Thomas Chemmanoor
  * The purpose of the Level class is to have an object that creates a game level when instantiated.
+ * This class is well designed since it has an atomic method that only takes one object and a contructor that only does
+ * one thing (add things to the current group).
  * It loads the correct levelInfo object from the levelInfo array and adds those bricks dictated by the levelInfo object into the current group.
  * The only situation that the class would fail would be if the user fails to put the required arguments in a constructor when instantiating an object of this type.
  * This class is also assuming that the leveloInfo array is not null.

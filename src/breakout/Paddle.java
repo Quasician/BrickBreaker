@@ -5,6 +5,7 @@ import javafx.scene.paint.Paint;
 /**
  * @author Thomas Chemmanoor
  * The purpose of the Paddle class is to have an object with the same behaviors and attributes as a paddle in breakout.
+ * This class is well designed since it shows the simple, atomic methodology of methods inside of a class
  * However, the paddle's hp is the player's hp.
  * The only situation that the class would fail would be if the user fails to put the required arguments in a constructor when instantiating an object of this type.
  * This class depends on the package breakout and the class GameObject.
